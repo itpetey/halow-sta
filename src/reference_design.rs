@@ -157,16 +157,16 @@ pub fn build_spi_reference_design() -> Design {
     d.add_res("R23", 12.4.kohm(), "W5500_EXRES", "GND");
 
     // TOCAP: 4.7 µF reference capacitor (C10)
-    d.add_cap("C10", 4.7.uf(), "W5500_TOCAP", "GND");
+    d.add_de_cap("C10", 4.7.uf(), "W5500_TOCAP", "GND");
 
     // 1V2O: 10 nF regulator bypass capacitor (C11)
-    d.add_cap("C11", 10.0.nf(), "W5500_1V2O", "GND");
+    d.add_de_cap("C11", 10.0.nf(), "W5500_1V2O", "GND");
 
     // Decoupling capacitors for W5500 VDD + AVDD
-    d.add_cap("C12", 100.0.nf(), "VDD_IO", "GND");
-    d.add_cap("C13", 10.0.uf(), "VDD_IO", "GND");
-    d.add_cap("C14", 100.0.nf(), "AVDD", "GND");
-    d.add_cap("C15", 10.0.uf(), "AVDD", "GND");
+    d.add_de_cap("C12", 100.0.nf(), "VDD_IO", "GND");
+    d.add_de_cap("C13", 10.0.uf(), "VDD_IO", "GND");
+    d.add_de_cap("C14", 100.0.nf(), "AVDD", "GND");
+    d.add_de_cap("C15", 10.0.uf(), "AVDD", "GND");
 
     // PMODE pull-ups (10 kΩ → auto-negotiation enabled, PMODE[2:0]=111)
     d.add_res("R24", 10.0.kohm(), "AVDD", "W5500_SPDLED");
@@ -175,16 +175,16 @@ pub fn build_spi_reference_design() -> Design {
 
     // ═══ 4. HaLow decoupling capacitors (from original SPI ref design) ═══
 
-    d.add_cap("C1", 100.0.pf(), "VDD_FEM", "GND");
-    d.add_cap("C2", 22.0.uf(), "VDD_FEM", "GND");
-    d.add_cap("C3", 22.0.uf(), "VDD_FEM", "GND");
-    d.add_cap("C4", 10.0.uf(), "VDD_FEM", "GND");
-    d.add_cap("C5", 100.0.nf(), "VDD_FEM", "GND");
+    d.add_de_cap("C1", 100.0.pf(), "VDD_FEM", "GND");
+    d.add_de_cap("C2", 22.0.uf(), "VDD_FEM", "GND");
+    d.add_de_cap("C3", 22.0.uf(), "VDD_FEM", "GND");
+    d.add_de_cap("C4", 10.0.uf(), "VDD_FEM", "GND");
+    d.add_de_cap("C5", 100.0.nf(), "VDD_FEM", "GND");
 
-    d.add_cap("C6", 100.0.nf(), "VDD_IO", "GND");
-    d.add_cap("C7", 10.0.uf(), "VDD_IO", "GND");
-    d.add_cap("C8", 100.0.nf(), "VBAT", "GND");
-    d.add_cap("C9", 10.0.uf(), "VBAT", "GND");
+    d.add_de_cap("C6", 100.0.nf(), "VDD_IO", "GND");
+    d.add_de_cap("C7", 10.0.uf(), "VDD_IO", "GND");
+    d.add_de_cap("C8", 100.0.nf(), "VBAT", "GND");
+    d.add_de_cap("C9", 10.0.uf(), "VBAT", "GND");
 
     // ═══ 5. HaLow SPI bus pull-up resistors ══════════════════════════
 
