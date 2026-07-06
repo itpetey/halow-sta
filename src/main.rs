@@ -11,5 +11,10 @@ use reference_design::{build_spi_reference_design, run_analysis};
 
 fn main() {
     let design = build_spi_reference_design();
+
+    let json = serde_json::to_string_pretty(&design).expect("serialize design to JSON");
+    std::fs::write("halow-design.json", json).expect("write halow-design.json");
+    println!("Wrote halow-design.json");
+
     run_analysis(&design);
 }

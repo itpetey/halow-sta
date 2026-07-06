@@ -21,18 +21,17 @@
 //! | C12-C19   | 100 nF    | VDD/AVDD   | Decoupling per supply pin   |
 //! | R24-R26   | 10 kΩ     | PMODE[2:0] | Pull-ups (auto-neg enabled)|
 
-use copperleaf::{Block, Limits, Pin, Role, SigKind, SigSpec, UnitExt};
+use copperleaf::{Block, Limits, Pin, Role, SigSpec, UnitExt};
 
 /// W5500 Ethernet controller (48-LQFP, integrated 10/100 PHY).
 #[derive(Clone, Debug)]
 pub struct W5500 {
-    id: String,
     pins: Vec<Pin>,
 }
 
 impl W5500 {
     /// Create a W5500 model with all relevant pins from the 48-LQFP package.
-    pub fn new(id: &str) -> Self {
+    pub fn new() -> Self {
         let spi_limits = Limits {
             v_min: 0.0.volt(),
             v_max: 5.5.volt(), // 5V-tolerant I/O per datasheet
@@ -57,41 +56,20 @@ impl W5500 {
             i_max: 100.0.amp(),
         };
 
-        let spi_sig = SigSpec {
-            kind: SigKind::Generic,
-            bandwidth: Some(33.0.mhz()), // practical SCLK limit
-            edge_rate: None,
-            target_impedance: Some(50.0.ohm()),
-        };
-
-        let spi_clk_sig = SigSpec {
-            kind: SigKind::Clock,
-            bandwidth: Some(33.0.mhz()),
-            edge_rate: None,
-            target_impedance: Some(50.0.ohm()),
-        };
-
-        let analog_sig = SigSpec {
-            kind: SigKind::AnalogLowNoise,
-            bandwidth: None,
-            edge_rate: None,
-            target_impedance: Some(50.0.ohm()),
-        };
-
         let pins: Vec<Pin> = vec![
             // ── Ethernet PHY analog pins ──────────────────────────────────
             Pin::new("TXP", Role::AnalogOut, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(analog_sig)),
+            }, Some(SigSpec::rf_50ohm())),
             Pin::new("TXN", Role::AnalogOut, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(analog_sig)),
+            }, Some(SigSpec::rf_50ohm())),
             Pin::new("RXP", Role::AnalogIn, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(analog_sig)),
+            }, Some(SigSpec::rf_50ohm())),
             Pin::new("RXN", Role::AnalogIn, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(analog_sig)),
+            }, Some(SigSpec::rf_50ohm())),
 
             // ── Analog power/ground ────────────────────────────────────────
             Pin::new("AVDD", Role::PowerIn, pwr_limits, None),
@@ -114,21 +92,16 @@ impl W5500 {
             // ── Crystal oscillator ─────────────────────────────────────────
             Pin::new("XI", Role::AnalogIn, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, Some(SigSpec {
-                kind: SigKind::Clock,
-                bandwidth: Some(25.0.mhz()),
-                edge_rate: None,
-                target_impedance: None,
-            })),
+            }, Some(SigSpec::spi_clk(25.0))),
             Pin::new("XO", Role::AnalogOut, Limits {
                 v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
             }, None),
 
             // ── SPI interface (slave mode) ────────────────────────────────
-            Pin::new("SCSn", Role::DigitalIO, spi_limits, Some(spi_sig)),
-            Pin::new("SCLK", Role::DigitalIO, spi_limits, Some(spi_clk_sig)),
-            Pin::new("MISO", Role::DigitalIO, spi_limits, Some(spi_sig)),
-            Pin::new("MOSI", Role::DigitalIO, spi_limits, Some(spi_sig)),
+            Pin::new("SCSn", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
+            Pin::new("SCLK", Role::DigitalIO, spi_limits, Some(SigSpec::spi_clk(33.0))),
+            Pin::new("MISO", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
+            Pin::new("MOSI", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
 
             // ── Control / interrupt ───────────────────────────────────────
             Pin::new("INTn", Role::DigitalIO, dio_limits, None), // active-low IRQ out
@@ -150,17 +123,11 @@ impl W5500 {
             Pin::new("GND", Role::Gnd, gnd_limits, None),
         ];
 
-        Self {
-            id: id.to_owned(),
-            pins,
-        }
+        Self { pins }
     }
 }
 
 impl Block for W5500 {
-    fn id(&self) -> &str {
-        &self.id
-    }
     fn pins(&self) -> &[Pin] {
         &self.pins
     }

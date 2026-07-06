@@ -43,80 +43,22 @@
 //!
 //! GPIOs 14–29 free for USB, SWD, ADC, status LEDs, future expansion.
 
-use copperleaf::{
-    ComponentInst, Constraint, Design, Diagnostic, Net, NetClass, NetKind, Severity, SigKind,
-    SigSpec, UnitExt,
-    erc_voltage_pin_to_net, synthesize_decoupling,
-};
+use copperleaf::{ComponentInst, Constraint, Design, DesignExt, Net, NetClass, NetKind, SigSpec, UnitExt};
+use copperleaf::parts::Crystal;
 
-use crate::parts::{Capacitor, Crystal, HtHc01, Resistor, Rp2354a, W5500};
+use crate::parts::{HtHc01, Rp2354a, W5500};
 
-// ── Net helpers ───────────────────────────────────────────────────────
-
-fn sig_net(name: &str, spec: SigSpec) -> Net {
-    Net {
-        name: name.into(),
-        kind: NetKind::Signal { spec },
-        class: NetClass::default(),
-        constraints: vec![],
-    }
+/// Shorthand for a signal net carrying `spec`.
+macro_rules! signal_net {
+    ($name:expr, $spec:expr) => {
+        Net {
+            name: $name.into(),
+            kind: NetKind::Signal { spec: $spec },
+            class: NetClass::default(),
+            constraints: vec![],
+        }
+    };
 }
-
-fn spi_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Generic,
-        bandwidth: Some(50.0.mhz()),
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-fn spi_clk_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Clock,
-        bandwidth: Some(50.0.mhz()),
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-fn spi1_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Generic,
-        bandwidth: Some(33.0.mhz()),
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-fn spi1_clk_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Clock,
-        bandwidth: Some(33.0.mhz()),
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-fn ctrl_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Generic,
-        bandwidth: None,
-        edge_rate: None,
-        target_impedance: None,
-    }
-}
-
-fn rf_spec() -> SigSpec {
-    SigSpec {
-        kind: SigKind::AnalogLowNoise,
-        bandwidth: None,
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-// ── Design builder ───────────────────────────────────────────────────
 
 /// Build the complete HT-HC01 V2 + RP2354A + W5500 bridge reference design.
 pub fn build_spi_reference_design() -> Design {
@@ -139,45 +81,37 @@ pub fn build_spi_reference_design() -> Design {
     d.add_net(avdd);
 
     // SPI0 bus → HaLow module (50 MHz)
-    d.add_net(sig_net("SDIO_CLK", spi_clk_spec())); // SCK
-    d.add_net(sig_net("SDIO_CMD", spi_spec())); // MOSI
-    d.add_net(sig_net("SDIO_D0", spi_spec())); // MISO
-    d.add_net(sig_net("SDIO_D1", spi_spec())); // INT
-    d.add_net(sig_net("SDIO_D3", spi_spec())); // CS
+    d.add_net(signal_net!("SDIO_CLK", SigSpec::spi_clk(50.0)));
+    d.add_net(signal_net!("SDIO_CMD", SigSpec::spi(50.0)));
+    d.add_net(signal_net!("SDIO_D0", SigSpec::spi(50.0)));
+    d.add_net(signal_net!("SDIO_D1", SigSpec::spi(50.0)));
+    d.add_net(signal_net!("SDIO_D3", SigSpec::spi(50.0)));
 
     // SPI1 bus → W5500 (33 MHz)
-    d.add_net(sig_net("W5500_SCLK", spi1_clk_spec()));
-    d.add_net(sig_net("W5500_MOSI", spi1_spec()));
-    d.add_net(sig_net("W5500_MISO", spi1_spec()));
-    d.add_net(sig_net("W5500_SCSn", spi1_spec()));
+    d.add_net(signal_net!("W5500_SCLK", SigSpec::spi_clk(33.0)));
+    d.add_net(signal_net!("W5500_MOSI", SigSpec::spi(33.0)));
+    d.add_net(signal_net!("W5500_MISO", SigSpec::spi(33.0)));
+    d.add_net(signal_net!("W5500_SCSn", SigSpec::spi(33.0)));
 
     // W5500 control
-    d.add_net(sig_net("W5500_RSTn", ctrl_spec()));
-    d.add_net(sig_net("W5500_INTn", ctrl_spec()));
+    d.add_net(signal_net!("W5500_RSTn", SigSpec::control()));
+    d.add_net(signal_net!("W5500_INTn", SigSpec::control()));
 
     // HaLow control signals
-    d.add_net(sig_net("MM_RESET_N", ctrl_spec()));
-    d.add_net(sig_net("MM_WAKE", ctrl_spec()));
-    d.add_net(sig_net("MM_BUSY", ctrl_spec()));
+    d.add_net(signal_net!("MM_RESET_N", SigSpec::control()));
+    d.add_net(signal_net!("MM_WAKE", SigSpec::control()));
+    d.add_net(signal_net!("MM_BUSY", SigSpec::control()));
 
     // HaLow antenna
-    d.add_net(sig_net("ANT", rf_spec()));
-    d.add_net(sig_net("ANT_CONN", rf_spec()));
+    d.add_net(signal_net!("ANT", SigSpec::rf_50ohm()));
+    d.add_net(signal_net!("ANT_CONN", SigSpec::rf_50ohm()));
 
-    // W5500 crystal / reference pins (need their own nets for the external components)
-    d.add_net(sig_net(
-        "W5500_XI",
-        SigSpec {
-            kind: SigKind::Clock,
-            bandwidth: Some(25.0.mhz()),
-            edge_rate: None,
-            target_impedance: None,
-        },
-    ));
-    d.add_net(sig_net("W5500_XO", ctrl_spec()));
-    d.add_net(sig_net("W5500_EXRES", ctrl_spec()));
-    d.add_net(sig_net("W5500_TOCAP", ctrl_spec()));
-    d.add_net(sig_net("W5500_1V2O", ctrl_spec()));
+    // W5500 crystal / reference pins
+    d.add_net(signal_net!("W5500_XI", SigSpec::spi_clk(25.0)));
+    d.add_net(signal_net!("W5500_XO", SigSpec::control()));
+    d.add_net(signal_net!("W5500_EXRES", SigSpec::control()));
+    d.add_net(signal_net!("W5500_TOCAP", SigSpec::control()));
+    d.add_net(signal_net!("W5500_1V2O", SigSpec::control()));
 
     // W5500 LED nets
     for name in [
@@ -186,7 +120,7 @@ pub fn build_spi_reference_design() -> Design {
         "W5500_DUPLED",
         "W5500_ACTLED",
     ] {
-        d.add_net(sig_net(name, ctrl_spec()));
+        d.add_net(signal_net!(name, SigSpec::control()));
     }
 
     // HaLow pull-down nets (unused GPIO + JTAG)
@@ -203,263 +137,158 @@ pub fn build_spi_reference_design() -> Design {
         "JTAG_TRST_N",
         "JTAG_TDO",
     ] {
-        d.add_net(sig_net(name, ctrl_spec()));
+        d.add_net(signal_net!(name, SigSpec::control()));
     }
 
     // ═══ 2. Active components ════════════════════════════════════════
 
-    let halow = HtHc01::new("HT-HC01_V2");
-    let u1 = ComponentInst::new("U1", halow);
-    d.add_component(&u1);
-
-    let mcu = Rp2354a::new("RP2354A");
-    let u2 = ComponentInst::new("U2", mcu);
-    d.add_component(&u2);
-
-    let eth = W5500::new("W5500");
-    let u3 = ComponentInst::new("U3", eth);
-    d.add_component(&u3);
+    d.add_component(ComponentInst::new("U1", HtHc01::new()));
+    d.add_component(ComponentInst::new("U2", Rp2354a::new()));
+    d.add_component(ComponentInst::new("U3", W5500::new()));
 
     // ═══ 3. W5500 external components ═════════════════════════════════
 
     // Crystal: 25 MHz (Y2) — connected between XI and XO
-    let y2 = Crystal::new("Y2", 25.0.mhz());
-    let y2_inst = ComponentInst::new("Y2", y2);
-    d.add_component(&y2_inst);
-    d.connect("Y2", "1", "W5500_XI");
-    d.connect("Y2", "2", "W5500_XO");
+    d.add_component(ComponentInst::new("Y2", Crystal::new(25.0.mhz())));
+    d.wire("Y2.1", "W5500_XI");
+    d.wire("Y2.2", "W5500_XO");
 
     // EXRES1: 12.4 kΩ 1% bias resistor (R23)
-    let r23 = Resistor::new("R23", 12.4.kohm());
-    let r23_inst = ComponentInst::new("R23", r23);
-    d.add_component(&r23_inst);
-    d.connect("R23", "1", "W5500_EXRES");
-    d.connect("R23", "2", "GND");
+    d.add_res("R23", 12.4.kohm(), "W5500_EXRES", "GND");
 
     // TOCAP: 4.7 µF reference capacitor (C10)
-    let c10 = Capacitor::new("C10", 4.7.uf());
-    let c10_inst = ComponentInst::new("C10", c10);
-    d.add_component(&c10_inst);
-    d.connect("C10", "1", "W5500_TOCAP");
-    d.connect("C10", "2", "GND");
+    d.add_cap("C10", 4.7.uf(), "W5500_TOCAP", "GND");
 
     // 1V2O: 10 nF regulator bypass capacitor (C11)
-    let c11 = Capacitor::new("C11", 10.0.nf());
-    let c11_inst = ComponentInst::new("C11", c11);
-    d.add_component(&c11_inst);
-    d.connect("C11", "1", "W5500_1V2O");
-    d.connect("C11", "2", "GND");
+    d.add_cap("C11", 10.0.nf(), "W5500_1V2O", "GND");
 
     // Decoupling capacitors for W5500 VDD + AVDD
-    // VDD: 100 nF + 10 µF, AVDD: 100 nF + 10 µF
-    let w5500_decoupling = [
-        ("C12", 100.0.nf(), "VDD_IO"), // W5500 VDD (ties to same 3.3V as VDD_IO net)
-        ("C13", 10.0.uf(), "VDD_IO"),
-        ("C14", 100.0.nf(), "AVDD"),
-        ("C15", 10.0.uf(), "AVDD"),
-    ];
-    for (refdes, value, rail) in w5500_decoupling {
-        let c = Capacitor::new(refdes, value);
-        let inst = ComponentInst::new(refdes, c);
-        d.add_component(&inst);
-        d.connect(refdes, "1", rail);
-        d.connect(refdes, "2", "GND");
-    }
+    d.add_cap("C12", 100.0.nf(), "VDD_IO", "GND");
+    d.add_cap("C13", 10.0.uf(), "VDD_IO", "GND");
+    d.add_cap("C14", 100.0.nf(), "AVDD", "GND");
+    d.add_cap("C15", 10.0.uf(), "AVDD", "GND");
 
     // PMODE pull-ups (10 kΩ → auto-negotiation enabled, PMODE[2:0]=111)
-    for (refdes, net_name) in [
-        ("R24", "W5500_SPDLED"),  // PMODE0 uses SPDLED pin; pulled up
-        ("R25", "W5500_LINKLED"), // PMODE1 uses LINKLED pin
-        ("R26", "W5500_DUPLED"),  // PMODE2 uses DUPLED pin
-    ] {
-        let r = Resistor::new(refdes, 10.0.kohm());
-        let inst = ComponentInst::new(refdes, r);
-        d.add_component(&inst);
-        d.connect(refdes, "1", "AVDD");
-        d.connect(refdes, "2", net_name);
-    }
+    d.add_res("R24", 10.0.kohm(), "AVDD", "W5500_SPDLED");
+    d.add_res("R25", 10.0.kohm(), "AVDD", "W5500_LINKLED");
+    d.add_res("R26", 10.0.kohm(), "AVDD", "W5500_DUPLED");
 
     // ═══ 4. HaLow decoupling capacitors (from original SPI ref design) ═══
 
-    let halow_caps = [
-        ("C1", 100.0.pf(), "VDD_FEM"),
-        ("C2", 22.0.uf(), "VDD_FEM"),
-        ("C3", 22.0.uf(), "VDD_FEM"),
-        ("C4", 10.0.uf(), "VDD_FEM"),
-        ("C5", 100.0.nf(), "VDD_FEM"),
-        ("C6", 100.0.nf(), "VDD_IO"),
-        ("C7", 10.0.uf(), "VDD_IO"),
-        ("C8", 100.0.nf(), "VBAT"),
-        ("C9", 10.0.uf(), "VBAT"),
-    ];
+    d.add_cap("C1", 100.0.pf(), "VDD_FEM", "GND");
+    d.add_cap("C2", 22.0.uf(), "VDD_FEM", "GND");
+    d.add_cap("C3", 22.0.uf(), "VDD_FEM", "GND");
+    d.add_cap("C4", 10.0.uf(), "VDD_FEM", "GND");
+    d.add_cap("C5", 100.0.nf(), "VDD_FEM", "GND");
 
-    for (refdes, value, rail) in halow_caps {
-        let c = Capacitor::new(refdes, value);
-        let inst = ComponentInst::new(refdes, c);
-        d.add_component(&inst);
-        d.connect(refdes, "1", rail);
-        d.connect(refdes, "2", "GND");
-    }
+    d.add_cap("C6", 100.0.nf(), "VDD_IO", "GND");
+    d.add_cap("C7", 10.0.uf(), "VDD_IO", "GND");
+    d.add_cap("C8", 100.0.nf(), "VBAT", "GND");
+    d.add_cap("C9", 10.0.uf(), "VBAT", "GND");
 
     // ═══ 5. HaLow SPI bus pull-up resistors ══════════════════════════
 
-    let pullups = [
-        ("R1", 10.0.kohm(), "SDIO_D3"),
-        ("R2", 10.0.kohm(), "SDIO_CLK"),
-        ("R3", 10.0.kohm(), "SDIO_CMD"),
-        ("R5", 10.0.kohm(), "SDIO_D1"),
-    ];
-
-    for (refdes, value, signal_net) in pullups {
-        let r = Resistor::new(refdes, value);
-        let inst = ComponentInst::new(refdes, r);
-        d.add_component(&inst);
-        d.connect(refdes, "1", "VDD_IO");
-        d.connect(refdes, "2", signal_net);
-    }
+    d.add_res("R1", 10.0.kohm(), "VDD_IO", "SDIO_D3");
+    d.add_res("R2", 10.0.kohm(), "VDD_IO", "SDIO_CLK");
+    d.add_res("R3", 10.0.kohm(), "VDD_IO", "SDIO_CMD");
+    d.add_res("R5", 10.0.kohm(), "VDD_IO", "SDIO_D1");
 
     // ═══ 6. HaLow pull-down resistors (JTAG + unused GPIO) ═══════════
 
-    let pulldowns: [(&str, &str); 11] = [
-        ("R7", "GPIO_9"),
-        ("R8", "GPIO_8"),
-        ("R9", "GPIO_7"),
-        ("R11", "GPIO_6"),
-        ("R13", "GPIO_5"),
-        ("R22", "SDIO_D2"),
-        ("R15", "JTAG_TCK"),
-        ("R16", "JTAG_TDI"),
-        ("R17", "JTAG_TMS"),
-        ("R19", "JTAG_TRST_N"),
-        ("R21", "JTAG_TDO"),
-    ];
-
-    for (refdes, signal_net) in pulldowns {
-        let r = Resistor::new(refdes, 10.0.kohm());
-        let inst = ComponentInst::new(refdes, r);
-        d.add_component(&inst);
-        d.connect(refdes, "1", signal_net);
-        d.connect(refdes, "2", "GND");
-    }
+    d.add_res("R7", 10.0.kohm(), "GPIO_9", "GND");
+    d.add_res("R8", 10.0.kohm(), "GPIO_8", "GND");
+    d.add_res("R9", 10.0.kohm(), "GPIO_7", "GND");
+    d.add_res("R11", 10.0.kohm(), "GPIO_6", "GND");
+    d.add_res("R13", 10.0.kohm(), "GPIO_5", "GND");
+    d.add_res("R22", 10.0.kohm(), "SDIO_D2", "GND");
+    d.add_res("R15", 10.0.kohm(), "JTAG_TCK", "GND");
+    d.add_res("R16", 10.0.kohm(), "JTAG_TDI", "GND");
+    d.add_res("R17", 10.0.kohm(), "JTAG_TMS", "GND");
+    d.add_res("R19", 10.0.kohm(), "JTAG_TRST_N", "GND");
+    d.add_res("R21", 10.0.kohm(), "JTAG_TDO", "GND");
 
     // ═══ 7. Antenna jumper (0 Ω) ═════════════════════════════════════
 
-    let r6 = Resistor::new("R6", 0.0.ohm());
-    let r6_inst = ComponentInst::new("R6", r6);
-    d.add_component(&r6_inst);
-    d.connect("R6", "1", "ANT");
-    d.connect("R6", "2", "ANT_CONN");
+    d.add_res("R6", 0.0.ohm(), "ANT", "ANT_CONN");
 
     // ═══ 8. HaLow module ↔ RP2354A connections (SPI0) ════════════════
 
     // SPI bus
-    d.connect("U1", "SDIO_CLK", "SDIO_CLK");
-    d.connect("U2", "GPIO2", "SDIO_CLK"); // F0: SPI0 SCK
-
-    d.connect("U1", "SDIO_CMD", "SDIO_CMD");
-    d.connect("U2", "GPIO3", "SDIO_CMD"); // F0: SPI0 TX (MOSI)
-
-    d.connect("U1", "SDIO_D0", "SDIO_D0");
-    d.connect("U2", "GPIO0", "SDIO_D0"); // F0: SPI0 RX (MISO)
-
-    d.connect("U1", "SDIO_D3", "SDIO_D3");
-    d.connect("U2", "GPIO1", "SDIO_D3"); // F0: SPI0 CSn
-
-    d.connect("U1", "SDIO_D1", "SDIO_D1");
-    d.connect("U2", "GPIO4", "SDIO_D1"); // SIO: level IRQ (SPI_INT)
+    d.connect_net("SDIO_CLK", &["U1.SDIO_CLK", "U2.GPIO2"]);
+    d.connect_net("SDIO_CMD", &["U1.SDIO_CMD", "U2.GPIO3"]);
+    d.connect_net("SDIO_D0", &["U1.SDIO_D0", "U2.GPIO0"]);
+    d.connect_net("SDIO_D3", &["U1.SDIO_D3", "U2.GPIO1"]);
+    d.connect_net("SDIO_D1", &["U1.SDIO_D1", "U2.GPIO4"]);
 
     // Control signals
-    d.connect("U1", "RESET_N", "MM_RESET_N");
-    d.connect("U2", "GPIO5", "MM_RESET_N");
-
-    d.connect("U1", "WAKE", "MM_WAKE");
-    d.connect("U2", "GPIO6", "MM_WAKE");
-
-    d.connect("U1", "BUSY", "MM_BUSY");
-    d.connect("U2", "GPIO7", "MM_BUSY");
+    d.connect_net("MM_RESET_N", &["U1.RESET_N", "U2.GPIO5"]);
+    d.connect_net("MM_WAKE", &["U1.WAKE", "U2.GPIO6"]);
+    d.connect_net("MM_BUSY", &["U1.BUSY", "U2.GPIO7"]);
 
     // HaLow power
-    d.connect("U1", "VBAT", "VBAT");
-    d.connect("U1", "VDD_IO", "VDD_IO");
-    d.connect("U1", "VDD_FEM", "VDD_FEM");
-    d.connect("U1", "GND", "GND");
+    d.wire("U1.VBAT", "VBAT");
+    d.wire("U1.VDD_IO", "VDD_IO");
+    d.wire("U1.VDD_FEM", "VDD_FEM");
+    d.wire("U1.GND", "GND");
 
     // HaLow antenna
-    d.connect("U1", "ANT", "ANT");
+    d.wire("U1.ANT", "ANT");
 
     // HaLow unused-pin pull-downs
-    for (pin_name, net_name) in [
-        ("GPIO_9", "GPIO_9"),
-        ("GPIO_8", "GPIO_8"),
-        ("GPIO_7", "GPIO_7"),
-        ("GPIO_6", "GPIO_6"),
-        ("GPIO_5", "GPIO_5"),
-        ("SDIO_D2", "SDIO_D2"),
-        ("JTAG_TCK", "JTAG_TCK"),
-        ("JTAG_TDI", "JTAG_TDI"),
-        ("JTAG_TMS", "JTAG_TMS"),
-        ("JTAG_TRST_N", "JTAG_TRST_N"),
-        ("JTAG_TDO", "JTAG_TDO"),
-    ] {
-        d.connect("U1", pin_name, net_name);
-    }
+    d.wire("U1.GPIO_9", "GPIO_9");
+    d.wire("U1.GPIO_8", "GPIO_8");
+    d.wire("U1.GPIO_7", "GPIO_7");
+    d.wire("U1.GPIO_6", "GPIO_6");
+    d.wire("U1.GPIO_5", "GPIO_5");
+    d.wire("U1.SDIO_D2", "SDIO_D2");
+    d.wire("U1.JTAG_TCK", "JTAG_TCK");
+    d.wire("U1.JTAG_TDI", "JTAG_TDI");
+    d.wire("U1.JTAG_TMS", "JTAG_TMS");
+    d.wire("U1.JTAG_TRST_N", "JTAG_TRST_N");
+    d.wire("U1.JTAG_TDO", "JTAG_TDO");
+
     // Remaining unused GPIOs → GND directly
-    d.connect("U1", "GPIO_4", "GND");
-    d.connect("U1", "GPIO_3", "GND");
-    d.connect("U1", "GPIO_2", "GND");
-    d.connect("U1", "GPIO_1", "GND");
+    d.wire("U1.GPIO_4", "GND");
+    d.wire("U1.GPIO_3", "GND");
+    d.wire("U1.GPIO_2", "GND");
+    d.wire("U1.GPIO_1", "GND");
 
     // ═══ 9. W5500 ↔ RP2354A connections (SPI1) ═══════════════════════
 
-    d.connect("U3", "SCLK", "W5500_SCLK");
-    d.connect("U2", "GPIO10", "W5500_SCLK"); // F0: SPI1 SCK
-
-    d.connect("U3", "MOSI", "W5500_MOSI");
-    d.connect("U2", "GPIO11", "W5500_MOSI"); // F0: SPI1 TX
-
-    d.connect("U3", "MISO", "W5500_MISO");
-    d.connect("U2", "GPIO8", "W5500_MISO"); // F0: SPI1 RX
-
-    d.connect("U3", "SCSn", "W5500_SCSn");
-    d.connect("U2", "GPIO9", "W5500_SCSn"); // F0: SPI1 CSn
+    d.connect_net("W5500_SCLK", &["U3.SCLK", "U2.GPIO10"]);
+    d.connect_net("W5500_MOSI", &["U3.MOSI", "U2.GPIO11"]);
+    d.connect_net("W5500_MISO", &["U3.MISO", "U2.GPIO8"]);
+    d.connect_net("W5500_SCSn", &["U3.SCSn", "U2.GPIO9"]);
 
     // Control
-    d.connect("U3", "RSTn", "W5500_RSTn");
-    d.connect("U2", "GPIO12", "W5500_RSTn");
-
-    d.connect("U3", "INTn", "W5500_INTn");
-    d.connect("U2", "GPIO13", "W5500_INTn");
+    d.connect_net("W5500_RSTn", &["U3.RSTn", "U2.GPIO12"]);
+    d.connect_net("W5500_INTn", &["U3.INTn", "U2.GPIO13"]);
 
     // W5500 power
-    d.connect("U3", "VDD", "VDD_IO"); // digital 3.3V (same rail)
-    d.connect("U3", "GND", "GND");
-    d.connect("U3", "AVDD", "AVDD"); // analog 3.3V
-    d.connect("U3", "AGND", "GND"); // analog ground ties to GND
+    d.wire("U3.VDD", "VDD_IO");
+    d.wire("U3.GND", "GND");
+    d.wire("U3.AVDD", "AVDD");
+    d.wire("U3.AGND", "GND");
 
     // W5500 crystal
-    d.connect("U3", "XI", "W5500_XI");
-    d.connect("U3", "XO", "W5500_XO");
+    d.wire("U3.XI", "W5500_XI");
+    d.wire("U3.XO", "W5500_XO");
 
     // W5500 bias/reference
-    d.connect("U3", "EXRES1", "W5500_EXRES");
-    d.connect("U3", "TOCAP", "W5500_TOCAP");
-    d.connect("U3", "1V2O", "W5500_1V2O");
+    d.wire("U3.EXRES1", "W5500_EXRES");
+    d.wire("U3.TOCAP", "W5500_TOCAP");
+    d.wire("U3.1V2O", "W5500_1V2O");
     // VBG: band-gap reference output — leave unconnected (floating) per datasheet
 
     // W5500 PMODE (pulled up via LED nets = auto-neg enabled)
-    d.connect("U3", "PMODE0", "W5500_SPDLED");
-    d.connect("U3", "PMODE1", "W5500_LINKLED");
-    d.connect("U3", "PMODE2", "W5500_DUPLED");
-
-    // W5500 LEDs
-    d.connect("U3", "SPDLED", "W5500_SPDLED");
-    d.connect("U3", "LINKLED", "W5500_LINKLED");
-    d.connect("U3", "DUPLED", "W5500_DUPLED");
-    d.connect("U3", "ACTLED", "W5500_ACTLED");
+    d.connect_net("W5500_SPDLED", &["U3.PMODE0", "U3.SPDLED"]);
+    d.connect_net("W5500_LINKLED", &["U3.PMODE1", "U3.LINKLED"]);
+    d.connect_net("W5500_DUPLED", &["U3.PMODE2", "U3.DUPLED"]);
+    d.wire("U3.ACTLED", "W5500_ACTLED");
 
     // RP2354A power
-    d.connect("U2", "IOVDD", "VDD_IO"); // MCU IO supply = 3.3V (same as HaLow VDD_IO)
-    d.connect("U2", "GND", "GND");
+    d.wire("U2.IOVDD", "VDD_IO");
+    d.wire("U2.GND", "GND");
 
     // ═══ 10. Top-level constraints ═════════════════════════════════════
 
@@ -474,181 +303,9 @@ pub fn build_spi_reference_design() -> Design {
     d
 }
 
-// ── Analysis & reporting ─────────────────────────────────────────────
-
-/// ERC: flag any pin named "NC" that is connected to a net.
-///
-/// Pins named "NC" (no-connect) are defined in the part datasheet as
-/// "do not connect externally". A connection indicates a wiring error.
-pub fn erc_nc_pin_connected(d: &Design) -> Vec<Diagnostic> {
-    let mut diags = Vec::new();
-    for component in &d.components {
-        for pin in &component.pins {
-            if pin.name == "NC" || pin.name.starts_with("NC_") {
-                let nets = d.nets_of_pin(&component.refdes, &pin.name);
-                if !nets.is_empty() {
-                    diags.push(Diagnostic {
-                        code: "ERC:NC_CONNECTED".into(),
-                        severity: Severity::Error,
-                        message: format!(
-                            "NC pin {}.{} is connected to net(s): {:?}",
-                            component.refdes, pin.name, nets
-                        ),
-                        entities: vec![format!("{}.{}", component.refdes, pin.name)],
-                        hint: Some("Remove the connection — NC pins must float".into()),
-                    });
-                }
-            }
-        }
-    }
-    diags
-}
-
-/// Run ERC and decoupling synthesis on the reference design and print
-/// a human-readable summary to stdout.
+/// Run ERC and print a human-readable summary to stdout.
 pub fn run_analysis(d: &Design) {
-    let (nodes, edges) = d.graph.counts();
-    println!("════════════════════════════════════════════════════════════");
-    println!(" HT-HC01 V2 + RP2354A + W5500 — HaLow/Ethernet Bridge");
-    println!("════════════════════════════════════════════════════════════");
-    println!();
-    println!(" Design graph:  {} nodes, {} edges", nodes, edges);
-    println!(" Components:    {}", d.components.len());
-    println!(" Nets:          {}", d.nets.len());
-    println!(" Constraints:   {}", d.constraints.len());
-    println!();
-
-    // ── Component list ──────────────────────────────────────────────
-    println!("── Components ──────────────────────────────────────────────────");
-    for c in &d.components {
-        if c.refdes.starts_with('U') {
-            println!("  {}  [IC]      {} pins", c.refdes, c.pins.len());
-        } else if c.refdes.starts_with('C') {
-            println!("  {}  [Cap]", c.refdes);
-        } else if c.refdes.starts_with('R') {
-            println!("  {}  [Res]", c.refdes);
-        } else if c.refdes.starts_with('Y') {
-            println!("  {}  [XTAL]", c.refdes);
-        } else {
-            println!("  {}  [???]     {} pins", c.refdes, c.pins.len());
-        }
-    }
-    println!();
-
-    // ── Net summary ────────────────────────────────────────────────
-    println!("── Power & signal nets ────────────────────────────────────────");
-    for n in &d.nets {
-        let pins = d.pins_on_net(&n.name);
-        match &n.kind {
-            NetKind::Power { v_nom, ripple } => {
-                let rip = ripple
-                    .map(|r| format!(" ripple {:.0}mV", r.as_base() * 1000.0))
-                    .unwrap_or_default();
-                println!(
-                    "  {:14}  POWER  {:.1}V{}  [{} pins]",
-                    n.name,
-                    v_nom.as_base(),
-                    rip,
-                    pins.len()
-                );
-            }
-            NetKind::Signal { spec } => {
-                let bw = spec
-                    .bandwidth
-                    .map(|b| {
-                        let mhz = 1.0 / b.as_base() / 1.0e6;
-                        format!(" {:.0}MHz", mhz)
-                    })
-                    .unwrap_or_default();
-                let z = spec
-                    .target_impedance
-                    .map(|z| format!(" {:.0}Ω", z.as_base()))
-                    .unwrap_or_default();
-                println!("  {:14}  SIG{}{}  [{} pins]", n.name, bw, z, pins.len());
-            }
-        }
-    }
-    println!();
-
-    // ── SPI bus connectivity ────────────────────────────────────────
-    println!("── SPI0 bus (HaLow, 50 MHz) ─────────────────────────────────────");
-    for net_name in ["SDIO_CLK", "SDIO_CMD", "SDIO_D0", "SDIO_D3", "SDIO_D1"] {
-        let pins = d.pins_on_net(net_name);
-        let pin_strs: Vec<String> = pins.iter().map(|(r, p)| format!("{}.{}", r, p)).collect();
-        println!("  {:10} : {}", net_name, pin_strs.join(", "));
-    }
-    println!();
-
-    println!("── SPI1 bus (W5500, 33 MHz) ────────────────────────────────────");
-    for net_name in ["W5500_SCLK", "W5500_MOSI", "W5500_MISO", "W5500_SCSn"] {
-        let pins = d.pins_on_net(net_name);
-        let pin_strs: Vec<String> = pins.iter().map(|(r, p)| format!("{}.{}", r, p)).collect();
-        println!("  {:10} : {}", net_name, pin_strs.join(", "));
-    }
-    println!();
-
-    // ── ERC: overvoltage checks ─────────────────────────────────────
-    println!("── ERC: overvoltage checks ──────────────────────────────────");
-    let mut erc_count = 0;
-    for c in &d.components {
-        for pin in &c.pins {
-            let nets = d.nets_of_pin(&c.refdes, &pin.name);
-            for net_name in &nets {
-                if let Some(net) = d.nets.iter().find(|n| &n.name == net_name)
-                    && let Some(diag) = erc_voltage_pin_to_net(net, pin)
-                {
-                    println!(
-                        "  [{:?}] {} — {} ({})",
-                        diag.severity, diag.code, diag.message, c.refdes
-                    );
-                    erc_count += 1;
-                }
-            }
-        }
-    }
-    if erc_count == 0 {
-        println!("  No overvoltage violations detected.");
-    }
-    println!();
-
-    // ── ERC: NC-pin checks ─────────────────────────────────────────
-    println!("── ERC: NC-pin checks ────────────────────────────────────────");
-    let nc_diags = erc_nc_pin_connected(d);
-    if nc_diags.is_empty() {
-        println!("  No NC-pin connection violations detected.");
-    } else {
-        for diag in &nc_diags {
-            println!(
-                "  [{:?}] {} — {}",
-                diag.severity, diag.code, diag.message
-            );
-        }
-    }
-    println!();
-
-    // ── Decoupling synthesis ────────────────────────────────────────
-    println!("── Decoupling synthesis ────────────────────────────────────");
-    let result = synthesize_decoupling(d);
-    if result.caps.is_empty() {
-        println!("  No decoupling caps synthesized.");
-    } else {
-        for cap in &result.caps {
-            println!(
-                "  {}  {:.3} µF  on {}  (from {}.{})",
-                cap.refdes,
-                cap.value.as_base() * 1.0e6,
-                cap.net,
-                cap.source_component,
-                cap.source_pin
-            );
-        }
-    }
-    for diag in &result.diagnostics {
-        if diag.code != "DECOUPLE:SUMMARY" {
-            println!("  [{:?}] {} — {}", diag.severity, diag.code, diag.message);
-        }
-    }
-    println!();
+    println!("{}", copperleaf::report(d));
 
     // ── Free GPIO summary ───────────────────────────────────────────
     println!("── RP2354A GPIO allocation ──────────────────────────────────");
@@ -678,7 +335,7 @@ pub fn run_analysis(d: &Design) {
 
 #[cfg(test)]
 mod tests {
-    use copperleaf::{Block, ComponentRecord, Limits, Pin, Role};
+    use copperleaf::{Block, ComponentRecord, Limits, Net, Pin, Role};
 
     use super::*;
 
@@ -686,13 +343,13 @@ mod tests {
 
     #[test]
     fn halow_module_has_38_pins() {
-        let m = HtHc01::new("HT-HC01_V2");
+        let m = HtHc01::new();
         assert_eq!(m.pins().len(), 38);
     }
 
     #[test]
     fn halow_module_has_three_power_inputs() {
-        let m = HtHc01::new("HT-HC01_V2");
+        let m = HtHc01::new();
         let power_pins: Vec<&Pin> = m
             .pins()
             .iter()
@@ -707,7 +364,7 @@ mod tests {
 
     #[test]
     fn rp2354a_has_30_gpio_plus_power() {
-        let mcu = Rp2354a::new("RP2354A");
+        let mcu = Rp2354a::new();
         let gpio_count = mcu
             .pins()
             .iter()
@@ -720,7 +377,7 @@ mod tests {
 
     #[test]
     fn w5500_has_spi_and_power_pins() {
-        let w = W5500::new("W5500");
+        let w = W5500::new();
         let names: Vec<&str> = w.pins().iter().map(|p| p.name.as_str()).collect();
         assert!(names.contains(&"SCSn"));
         assert!(names.contains(&"SCLK"));
@@ -862,20 +519,13 @@ mod tests {
     #[test]
     fn no_overvoltage_violations() {
         let d = build_spi_reference_design();
-        let mut violations = 0;
-        for c in &d.components {
-            for pin in &c.pins {
-                let nets = d.nets_of_pin(&c.refdes, &pin.name);
-                for net_name in &nets {
-                    if let Some(net) = d.nets.iter().find(|n| &n.name == net_name)
-                        && erc_voltage_pin_to_net(net, pin).is_some()
-                    {
-                        violations += 1;
-                    }
-                }
-            }
-        }
-        assert_eq!(violations, 0, "ERC should find no overvoltage violations");
+        let diags = copperleaf::run_erc(&d);
+        let overvoltage: Vec<_> = diags.iter().filter(|d| d.code == "ERC:OVERVOLT").collect();
+        assert!(
+            overvoltage.is_empty(),
+            "ERC overvoltage violations: {:?}",
+            overvoltage
+        );
     }
 
     #[test]
@@ -888,11 +538,15 @@ mod tests {
     #[test]
     fn nc_pins_are_not_connected() {
         let d = build_spi_reference_design();
-        let diags = erc_nc_pin_connected(&d);
+        let diags = copperleaf::run_erc(&d);
+        let nc_diags: Vec<_> = diags
+            .iter()
+            .filter(|d| d.code == "ERC:NC_CONNECTED")
+            .collect();
         assert!(
-            diags.is_empty(),
+            nc_diags.is_empty(),
             "NC pin(s) must be floating: {:?}",
-            diags.iter().map(|d| &d.message).collect::<Vec<_>>()
+            nc_diags.iter().map(|d| &d.message).collect::<Vec<_>>()
         );
     }
 
@@ -911,9 +565,12 @@ mod tests {
             constraints: vec![],
         });
         d.connect("U1", "NC", "GND");
-        let diags = erc_nc_pin_connected(&d);
-        assert_eq!(diags.len(), 1);
-        assert_eq!(diags[0].code, "ERC:NC_CONNECTED");
-        assert!(diags[0].message.contains("U1.NC"));
+        let diags = copperleaf::run_erc(&d);
+        let nc_diags: Vec<_> = diags
+            .iter()
+            .filter(|d| d.code == "ERC:NC_CONNECTED")
+            .collect();
+        assert_eq!(nc_diags.len(), 1);
+        assert!(nc_diags[0].message.contains("U1.NC"));
     }
 }

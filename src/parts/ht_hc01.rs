@@ -24,12 +24,11 @@
 //! | 21  | SDIO_CMD | SPI_MOSI |
 //! | 22  | SDIO_D3  | SPI_CS   |
 
-use copperleaf::{Block, Limits, Pin, Role, SigKind, SigSpec, UnitExt};
+use copperleaf::{Block, Limits, Pin, Role, SigSpec, UnitExt};
 
 /// Wi-Fi HaLow module with 38 pads, SPI interface active.
 #[derive(Clone, Debug)]
 pub struct HtHc01 {
-    id: String,
     pins: Vec<Pin>,
 }
 
@@ -50,26 +49,6 @@ fn rf_limits() -> Limits {
         v_min: 0.0.volt(),
         v_max: 1.2.volt(), // abs. max for analog/RF pin per datasheet §3.2.1
         i_max: 1.0.amp(),
-    }
-}
-
-/// SPI signal specification: up to 50 MHz, 50 Ω single-ended.
-fn spi_sig() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Generic,
-        bandwidth: Some(50.0.mhz()), // 20 ns period
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
-    }
-}
-
-/// SPI clock signal specification.
-fn spi_clk_sig() -> SigSpec {
-    SigSpec {
-        kind: SigKind::Clock,
-        bandwidth: Some(50.0.mhz()),
-        edge_rate: None,
-        target_impedance: Some(50.0.ohm()),
     }
 }
 
@@ -94,18 +73,18 @@ fn dio_pin(name: &str) -> Pin {
 }
 
 fn dio_spi_pin(name: &str) -> Pin {
-    Pin::new(name, Role::DigitalIO, digital_limits(), Some(spi_sig()))
+    Pin::new(name, Role::DigitalIO, digital_limits(), Some(SigSpec::spi(50.0)))
 }
 
 fn dio_clk_pin(name: &str) -> Pin {
-    Pin::new(name, Role::DigitalIO, digital_limits(), Some(spi_clk_sig()))
+    Pin::new(name, Role::DigitalIO, digital_limits(), Some(SigSpec::spi_clk(50.0)))
 }
 
 // ── Implementation ────────────────────────────────────────────────────
 
 impl HtHc01 {
     /// Create an HT-HC01 V2 module instance with all 38 pads defined.
-    pub fn new(id: &str) -> Self {
+    pub fn new() -> Self {
         let pins: Vec<Pin> = vec![
             // ── Row 1 (pads 1–11): JTAG & GND ───────────────────────
             gnd_pin("GND"),          // Pad 1
@@ -154,17 +133,11 @@ impl HtHc01 {
             Pin::new("ANT", Role::AnalogIn, rf_limits(), None), // Pad 38
         ];
 
-        Self {
-            id: id.to_owned(),
-            pins,
-        }
+        Self { pins }
     }
 }
 
 impl Block for HtHc01 {
-    fn id(&self) -> &str {
-        &self.id
-    }
     fn pins(&self) -> &[Pin] {
         &self.pins
     }

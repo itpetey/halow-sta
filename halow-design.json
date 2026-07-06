@@ -1,0 +1,5280 @@
+{
+  "nets": [
+    {
+      "name": "VBAT",
+      "kind": {
+        "Power": {
+          "v_nom": {
+            "value": 3.3,
+            "unit": "V"
+          },
+          "ripple": {
+            "value": 0.1,
+            "unit": "V"
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "VDD_IO",
+      "kind": {
+        "Power": {
+          "v_nom": {
+            "value": 3.3,
+            "unit": "V"
+          },
+          "ripple": {
+            "value": 0.05,
+            "unit": "V"
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "VDD_FEM",
+      "kind": {
+        "Power": {
+          "v_nom": {
+            "value": 5.0,
+            "unit": "V"
+          },
+          "ripple": {
+            "value": 0.1,
+            "unit": "V"
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GND",
+      "kind": {
+        "Power": {
+          "v_nom": {
+            "value": 0.0,
+            "unit": "V"
+          },
+          "ripple": null
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "AVDD",
+      "kind": {
+        "Power": {
+          "v_nom": {
+            "value": 3.3,
+            "unit": "V"
+          },
+          "ripple": {
+            "value": 0.05,
+            "unit": "V"
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_CLK",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_CMD",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_D0",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_D1",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_D3",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_SCLK",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_MOSI",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_MISO",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_SCSn",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_RSTn",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_INTn",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "MM_RESET_N",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "MM_WAKE",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "MM_BUSY",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "ANT",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "ANT_CONN",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_XI",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 4e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_XO",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_EXRES",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_TOCAP",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_1V2O",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_SPDLED",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_LINKLED",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_DUPLED",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "W5500_ACTLED",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GPIO_9",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GPIO_8",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GPIO_7",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GPIO_6",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "GPIO_5",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "SDIO_D2",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "JTAG_TCK",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "JTAG_TDI",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "JTAG_TMS",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "JTAG_TRST_N",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    },
+    {
+      "name": "JTAG_TDO",
+      "kind": {
+        "Signal": {
+          "spec": {
+            "kind": "Generic",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": null
+          }
+        }
+      },
+      "class": {
+        "min_width": null,
+        "clearance": null
+      },
+      "constraints": []
+    }
+  ],
+  "components": [
+    {
+      "refdes": "U1",
+      "pins": [
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "JTAG_TCK",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "JTAG_TDI",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "NC",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "JTAG_TMS",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "JTAG_TRST_N",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "JTAG_TDO",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "NC",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "NC",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_9",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_8",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_7",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "SDIO_D1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "SDIO_D0",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "SDIO_CLK",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "VDD_IO",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 1.62,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.2,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "SDIO_CMD",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "SDIO_D3",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "SDIO_D2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_6",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "VBAT",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 3.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.2,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_5",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_4",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_3",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "VDD_FEM",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 3.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.25,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.8,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO_1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "BUSY",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "RESET_N",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "WAKE",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.02,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "ANT",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 1.2,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 1.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": [
+        {
+          "Decoupling": {
+            "values": [
+              {
+                "value": 1.0000000000000001e-7,
+                "unit": "F"
+              },
+              {
+                "value": 9.999999999999999e-6,
+                "unit": "F"
+              }
+            ],
+            "per_pin": true
+          }
+        },
+        {
+          "LengthMatch": {
+            "group": "SPI_BUS",
+            "skew_ps": 200.0
+          }
+        },
+        {
+          "MaxJunction": {
+            "temp": {
+              "value": 85.0,
+              "unit": "C"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "refdes": "U2",
+      "pins": [
+        {
+          "name": "GPIO0",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO3",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 2e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO4",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO5",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO6",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO7",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO8",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO9",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO10",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO11",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "GPIO12",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO13",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO14",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO15",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO16",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO17",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO18",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO19",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO20",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO21",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO22",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO23",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO24",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO25",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO26",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO27",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO28",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GPIO29",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.012,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "IOVDD",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 1.62,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": [
+        {
+          "LengthMatch": {
+            "group": "SPI0_BUS",
+            "skew_ps": 200.0
+          }
+        },
+        {
+          "LengthMatch": {
+            "group": "SPI1_BUS",
+            "skew_ps": 500.0
+          }
+        },
+        {
+          "MaxJunction": {
+            "temp": {
+              "value": 85.0,
+              "unit": "C"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "refdes": "U3",
+      "pins": [
+        {
+          "name": "TXP",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.05,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "TXN",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.05,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "RXP",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.05,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "RXN",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.05,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "AnalogLowNoise",
+            "bandwidth": null,
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "AVDD",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 2.97,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.15,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "AGND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "EXRES1",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.001,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "TOCAP",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.001,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "1V2O",
+          "role": "PowerOut",
+          "limits": {
+            "v_min": {
+              "value": 1.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 1.4,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.01,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "VBG",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.001,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "XI",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.001,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 4e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "XO",
+          "role": "AnalogOut",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.001,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "SCSn",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "SCLK",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Clock",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "MISO",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "MOSI",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": {
+            "kind": "Generic",
+            "bandwidth": {
+              "value": 3.0303030303030305e-8,
+              "unit": "s"
+            },
+            "edge_rate": null,
+            "target_impedance": {
+              "value": 50.0,
+              "unit": "Ohm"
+            }
+          }
+        },
+        {
+          "name": "INTn",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "RSTn",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "PMODE0",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "PMODE1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "PMODE2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "SPDLED",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "LINKLED",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "DUPLED",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "ACTLED",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 5.5,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.008,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "VDD",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 2.97,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.63,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.15,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "GND",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 100.0,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": [
+        {
+          "Decoupling": {
+            "values": [
+              {
+                "value": 1.0000000000000001e-7,
+                "unit": "F"
+              },
+              {
+                "value": 9.999999999999999e-6,
+                "unit": "F"
+              }
+            ],
+            "per_pin": true
+          }
+        },
+        {
+          "MaxJunction": {
+            "temp": {
+              "value": 125.0,
+              "unit": "C"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "refdes": "Y2",
+      "pins": [
+        {
+          "name": "1",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.01,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "AnalogIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.01,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R23",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C10",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C11",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C12",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C13",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C14",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C15",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R24",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R25",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R26",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C1",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C2",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C3",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C4",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C5",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C6",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C7",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C8",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "C9",
+      "pins": [
+        {
+          "name": "1",
+          "role": "PowerIn",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 50.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "Gnd",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R1",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R2",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R3",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R5",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R7",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R8",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R9",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R11",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R13",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R22",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R15",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R16",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R17",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R19",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R21",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    },
+    {
+      "refdes": "R6",
+      "pins": [
+        {
+          "name": "1",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        },
+        {
+          "name": "2",
+          "role": "DigitalIO",
+          "limits": {
+            "v_min": {
+              "value": 0.0,
+              "unit": "V"
+            },
+            "v_max": {
+              "value": 3.6,
+              "unit": "V"
+            },
+            "i_max": {
+              "value": 0.1,
+              "unit": "A"
+            }
+          },
+          "sig": null
+        }
+      ],
+      "constraints": []
+    }
+  ],
+  "constraints": [
+    {
+      "ResonanceIndex": {
+        "max": 0.5
+      }
+    },
+    {
+      "MaxJunction": {
+        "temp": {
+          "value": 85.0,
+          "unit": "C"
+        }
+      }
+    },
+    {
+      "ReturnPath": {
+        "requires_plane": true
+      }
+    }
+  ],
+  "diagnostics": [],
+  "connections": [
+    {
+      "refdes": "Y2",
+      "pin": "1",
+      "net": "W5500_XI"
+    },
+    {
+      "refdes": "Y2",
+      "pin": "2",
+      "net": "W5500_XO"
+    },
+    {
+      "refdes": "R23",
+      "pin": "1",
+      "net": "W5500_EXRES"
+    },
+    {
+      "refdes": "R23",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C10",
+      "pin": "1",
+      "net": "W5500_TOCAP"
+    },
+    {
+      "refdes": "C10",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C11",
+      "pin": "1",
+      "net": "W5500_1V2O"
+    },
+    {
+      "refdes": "C11",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C12",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "C12",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C13",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "C13",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C14",
+      "pin": "1",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "C14",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C15",
+      "pin": "1",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "C15",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R24",
+      "pin": "1",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "R24",
+      "pin": "2",
+      "net": "W5500_SPDLED"
+    },
+    {
+      "refdes": "R25",
+      "pin": "1",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "R25",
+      "pin": "2",
+      "net": "W5500_LINKLED"
+    },
+    {
+      "refdes": "R26",
+      "pin": "1",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "R26",
+      "pin": "2",
+      "net": "W5500_DUPLED"
+    },
+    {
+      "refdes": "C1",
+      "pin": "1",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "C1",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C2",
+      "pin": "1",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "C2",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C3",
+      "pin": "1",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "C3",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C4",
+      "pin": "1",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "C4",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C5",
+      "pin": "1",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "C5",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C6",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "C6",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C7",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "C7",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C8",
+      "pin": "1",
+      "net": "VBAT"
+    },
+    {
+      "refdes": "C8",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "C9",
+      "pin": "1",
+      "net": "VBAT"
+    },
+    {
+      "refdes": "C9",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R1",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "R1",
+      "pin": "2",
+      "net": "SDIO_D3"
+    },
+    {
+      "refdes": "R2",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "R2",
+      "pin": "2",
+      "net": "SDIO_CLK"
+    },
+    {
+      "refdes": "R3",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "R3",
+      "pin": "2",
+      "net": "SDIO_CMD"
+    },
+    {
+      "refdes": "R5",
+      "pin": "1",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "R5",
+      "pin": "2",
+      "net": "SDIO_D1"
+    },
+    {
+      "refdes": "R7",
+      "pin": "1",
+      "net": "GPIO_9"
+    },
+    {
+      "refdes": "R7",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R8",
+      "pin": "1",
+      "net": "GPIO_8"
+    },
+    {
+      "refdes": "R8",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R9",
+      "pin": "1",
+      "net": "GPIO_7"
+    },
+    {
+      "refdes": "R9",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R11",
+      "pin": "1",
+      "net": "GPIO_6"
+    },
+    {
+      "refdes": "R11",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R13",
+      "pin": "1",
+      "net": "GPIO_5"
+    },
+    {
+      "refdes": "R13",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R22",
+      "pin": "1",
+      "net": "SDIO_D2"
+    },
+    {
+      "refdes": "R22",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R15",
+      "pin": "1",
+      "net": "JTAG_TCK"
+    },
+    {
+      "refdes": "R15",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R16",
+      "pin": "1",
+      "net": "JTAG_TDI"
+    },
+    {
+      "refdes": "R16",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R17",
+      "pin": "1",
+      "net": "JTAG_TMS"
+    },
+    {
+      "refdes": "R17",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R19",
+      "pin": "1",
+      "net": "JTAG_TRST_N"
+    },
+    {
+      "refdes": "R19",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R21",
+      "pin": "1",
+      "net": "JTAG_TDO"
+    },
+    {
+      "refdes": "R21",
+      "pin": "2",
+      "net": "GND"
+    },
+    {
+      "refdes": "R6",
+      "pin": "1",
+      "net": "ANT"
+    },
+    {
+      "refdes": "R6",
+      "pin": "2",
+      "net": "ANT_CONN"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_CLK",
+      "net": "SDIO_CLK"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO2",
+      "net": "SDIO_CLK"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_CMD",
+      "net": "SDIO_CMD"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO3",
+      "net": "SDIO_CMD"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_D0",
+      "net": "SDIO_D0"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO0",
+      "net": "SDIO_D0"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_D3",
+      "net": "SDIO_D3"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO1",
+      "net": "SDIO_D3"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_D1",
+      "net": "SDIO_D1"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO4",
+      "net": "SDIO_D1"
+    },
+    {
+      "refdes": "U1",
+      "pin": "RESET_N",
+      "net": "MM_RESET_N"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO5",
+      "net": "MM_RESET_N"
+    },
+    {
+      "refdes": "U1",
+      "pin": "WAKE",
+      "net": "MM_WAKE"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO6",
+      "net": "MM_WAKE"
+    },
+    {
+      "refdes": "U1",
+      "pin": "BUSY",
+      "net": "MM_BUSY"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO7",
+      "net": "MM_BUSY"
+    },
+    {
+      "refdes": "U1",
+      "pin": "VBAT",
+      "net": "VBAT"
+    },
+    {
+      "refdes": "U1",
+      "pin": "VDD_IO",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "U1",
+      "pin": "VDD_FEM",
+      "net": "VDD_FEM"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GND",
+      "net": "GND"
+    },
+    {
+      "refdes": "U1",
+      "pin": "ANT",
+      "net": "ANT"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_9",
+      "net": "GPIO_9"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_8",
+      "net": "GPIO_8"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_7",
+      "net": "GPIO_7"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_6",
+      "net": "GPIO_6"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_5",
+      "net": "GPIO_5"
+    },
+    {
+      "refdes": "U1",
+      "pin": "SDIO_D2",
+      "net": "SDIO_D2"
+    },
+    {
+      "refdes": "U1",
+      "pin": "JTAG_TCK",
+      "net": "JTAG_TCK"
+    },
+    {
+      "refdes": "U1",
+      "pin": "JTAG_TDI",
+      "net": "JTAG_TDI"
+    },
+    {
+      "refdes": "U1",
+      "pin": "JTAG_TMS",
+      "net": "JTAG_TMS"
+    },
+    {
+      "refdes": "U1",
+      "pin": "JTAG_TRST_N",
+      "net": "JTAG_TRST_N"
+    },
+    {
+      "refdes": "U1",
+      "pin": "JTAG_TDO",
+      "net": "JTAG_TDO"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_4",
+      "net": "GND"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_3",
+      "net": "GND"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_2",
+      "net": "GND"
+    },
+    {
+      "refdes": "U1",
+      "pin": "GPIO_1",
+      "net": "GND"
+    },
+    {
+      "refdes": "U3",
+      "pin": "SCLK",
+      "net": "W5500_SCLK"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO10",
+      "net": "W5500_SCLK"
+    },
+    {
+      "refdes": "U3",
+      "pin": "MOSI",
+      "net": "W5500_MOSI"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO11",
+      "net": "W5500_MOSI"
+    },
+    {
+      "refdes": "U3",
+      "pin": "MISO",
+      "net": "W5500_MISO"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO8",
+      "net": "W5500_MISO"
+    },
+    {
+      "refdes": "U3",
+      "pin": "SCSn",
+      "net": "W5500_SCSn"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO9",
+      "net": "W5500_SCSn"
+    },
+    {
+      "refdes": "U3",
+      "pin": "RSTn",
+      "net": "W5500_RSTn"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO12",
+      "net": "W5500_RSTn"
+    },
+    {
+      "refdes": "U3",
+      "pin": "INTn",
+      "net": "W5500_INTn"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GPIO13",
+      "net": "W5500_INTn"
+    },
+    {
+      "refdes": "U3",
+      "pin": "VDD",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "U3",
+      "pin": "GND",
+      "net": "GND"
+    },
+    {
+      "refdes": "U3",
+      "pin": "AVDD",
+      "net": "AVDD"
+    },
+    {
+      "refdes": "U3",
+      "pin": "AGND",
+      "net": "GND"
+    },
+    {
+      "refdes": "U3",
+      "pin": "XI",
+      "net": "W5500_XI"
+    },
+    {
+      "refdes": "U3",
+      "pin": "XO",
+      "net": "W5500_XO"
+    },
+    {
+      "refdes": "U3",
+      "pin": "EXRES1",
+      "net": "W5500_EXRES"
+    },
+    {
+      "refdes": "U3",
+      "pin": "TOCAP",
+      "net": "W5500_TOCAP"
+    },
+    {
+      "refdes": "U3",
+      "pin": "1V2O",
+      "net": "W5500_1V2O"
+    },
+    {
+      "refdes": "U3",
+      "pin": "PMODE0",
+      "net": "W5500_SPDLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "SPDLED",
+      "net": "W5500_SPDLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "PMODE1",
+      "net": "W5500_LINKLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "LINKLED",
+      "net": "W5500_LINKLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "PMODE2",
+      "net": "W5500_DUPLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "DUPLED",
+      "net": "W5500_DUPLED"
+    },
+    {
+      "refdes": "U3",
+      "pin": "ACTLED",
+      "net": "W5500_ACTLED"
+    },
+    {
+      "refdes": "U2",
+      "pin": "IOVDD",
+      "net": "VDD_IO"
+    },
+    {
+      "refdes": "U2",
+      "pin": "GND",
+      "net": "GND"
+    }
+  ]
+}

@@ -26,18 +26,17 @@
 //!
 //! GPIOs 14–29 remain free for USB, SWD, ADC, or future expansion.
 
-use copperleaf::{Block, Limits, Pin, Role, SigKind, SigSpec, UnitExt};
+use copperleaf::{Block, Limits, Pin, Role, SigSpec, UnitExt};
 
 /// Raspberry Pi RP2354A (QFN-60, 2 MB internal flash, 30 GPIOs).
 #[derive(Clone, Debug)]
 pub struct Rp2354a {
-    id: String,
     pins: Vec<Pin>,
 }
 
 impl Rp2354a {
     /// Create an RP2354A model with its 30 GPIOs and power pins.
-    pub fn new(id: &str) -> Self {
+    pub fn new() -> Self {
         let dio_limits = Limits {
             v_min: 0.0.volt(),
             v_max: 3.63.volt(), // IOVDD abs max
@@ -62,20 +61,18 @@ impl Rp2354a {
         for n in 0..30u8 {
             let sig = if n <= 3 {
                 // SPI0 pins — 50 MHz capable
-                Some(SigSpec {
-                    kind: if n == 2 { SigKind::Clock } else { SigKind::Generic },
-                    bandwidth: Some(50.0.mhz()),
-                    edge_rate: None,
-                    target_impedance: Some(50.0.ohm()),
-                })
+                if n == 2 {
+                    Some(SigSpec::spi_clk(50.0))
+                } else {
+                    Some(SigSpec::spi(50.0))
+                }
             } else if (8..=11).contains(&n) {
                 // SPI1 pins — 33 MHz (W5500 practical max)
-                Some(SigSpec {
-                    kind: if n == 10 { SigKind::Clock } else { SigKind::Generic },
-                    bandwidth: Some(33.0.mhz()),
-                    edge_rate: None,
-                    target_impedance: Some(50.0.ohm()),
-                })
+                if n == 10 {
+                    Some(SigSpec::spi_clk(33.0))
+                } else {
+                    Some(SigSpec::spi(33.0))
+                }
             } else {
                 None // plain GPIO / control
             };
@@ -87,17 +84,11 @@ impl Rp2354a {
         // Multiple GND pins modelled as a single logical pin (all tie to GND net)
         pins.push(Pin::new("GND", Role::Gnd, gnd_limits, None));
 
-        Self {
-            id: id.to_owned(),
-            pins,
-        }
+        Self { pins }
     }
 }
 
 impl Block for Rp2354a {
-    fn id(&self) -> &str {
-        &self.id
-    }
     fn pins(&self) -> &[Pin] {
         &self.pins
     }
