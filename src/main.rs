@@ -13,8 +13,8 @@ fn main() {
     let design = build_spi_reference_design();
 
     let json = serde_json::to_string_pretty(&design).expect("serialize design to JSON");
-    std::fs::write("halow-design.json", json).expect("write halow-design.json");
-    println!("Wrote halow-design.json");
+    std::fs::write("halow-sta.json", json).expect("write halow-sta.json");
+    println!("Wrote halow-sta.json");
 
     run_analysis(&design);
 }

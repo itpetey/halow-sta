@@ -290,6 +290,12 @@ pub fn build_spi_reference_design() -> Design {
     d.wire("U2.IOVDD", "VDD_IO");
     d.wire("U2.GND", "GND");
 
+    // RP2354A free GPIOs (GPIO14–29) — tied to GND as unused.
+    // Available for USB, SWD, ADC, status LEDs, or future expansion.
+    for n in 14u8..30 {
+        d.wire(&format!("U2.GPIO{}", n), "GND");
+    }
+
     // ═══ 10. Top-level constraints ═════════════════════════════════════
 
     d.add_constraint(Constraint::ResonanceIndex { max: 0.5 });
