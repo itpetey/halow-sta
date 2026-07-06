@@ -4,7 +4,7 @@
 //! decoupling capacitors, pull-up resistors and pull-down resistors shown
 //! in the HT-HC01 V2 SPI reference design schematic.
 
-use copperleaf::{Block, Farad, Limits, Ohm, Pin, Qty, Role, UnitExt};
+use copperleaf::{Block, Farad, Limits, Ohm, Pin, Qty, Role, Second, UnitExt};
 
 // ── Capacitor ─────────────────────────────────────────────────────────
 
@@ -78,6 +78,58 @@ impl Resistor {
 }
 
 impl Block for Resistor {
+    fn id(&self) -> &str {
+        &self.id
+    }
+    fn pins(&self) -> &[Pin] {
+        &self.pins
+    }
+}
+
+// ── Crystal ─────────────────────────────────────────────────────────
+
+/// A 2-pin quartz crystal with a specified frequency.
+///
+/// Both pins are modeled as symmetric analog inputs (passive resonator).
+/// The frequency is stored for BOM/value annotation; the actual resonance
+/// is established by the driving circuit (e.g. the W5500's internal
+/// oscillator amplifier).
+#[derive(Clone, Debug)]
+pub struct Crystal {
+    id: String,
+    /// Crystal frequency, stored as a period in seconds.
+    /// Use `25.0.mhz()` etc. to construct.
+    #[allow(dead_code)]
+    pub frequency: Qty<Second>,
+    pins: Vec<Pin>,
+}
+
+impl Crystal {
+    /// Create a new crystal with the given frequency.
+    ///
+    /// # Example
+    /// ```
+    /// use copperleaf::UnitExt;
+    /// let y = Crystal::new("Y2", 25.0.mhz());
+    /// ```
+    pub fn new(id: &str, frequency: Qty<Second>) -> Self {
+        let xtal_limits = Limits {
+            v_min: 0.0.volt(),
+            v_max: 3.63.volt(),
+            i_max: 0.001.amp(),
+        };
+        Self {
+            id: id.to_owned(),
+            frequency,
+            pins: vec![
+                Pin::new("1", Role::AnalogIn, xtal_limits, None),
+                Pin::new("2", Role::AnalogIn, xtal_limits, None),
+            ],
+        }
+    }
+}
+
+impl Block for Crystal {
     fn id(&self) -> &str {
         &self.id
     }

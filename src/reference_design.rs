@@ -44,11 +44,12 @@
 //! GPIOs 14–29 free for USB, SWD, ADC, status LEDs, future expansion.
 
 use copperleaf::{
-    ComponentInst, Constraint, Design, Net, NetClass, NetKind, SigKind, SigSpec, UnitExt,
+    ComponentInst, Constraint, Design, Diagnostic, Net, NetClass, NetKind, Severity, SigKind,
+    SigSpec, UnitExt,
     erc_voltage_pin_to_net, synthesize_decoupling,
 };
 
-use crate::parts::{Capacitor, HtHc01, Resistor, Rp2354a, W5500};
+use crate::parts::{Capacitor, Crystal, HtHc01, Resistor, Rp2354a, W5500};
 
 // ── Net helpers ───────────────────────────────────────────────────────
 
@@ -222,8 +223,7 @@ pub fn build_spi_reference_design() -> Design {
     // ═══ 3. W5500 external components ═════════════════════════════════
 
     // Crystal: 25 MHz (Y2) — connected between XI and XO
-    // (Modelled as a 2-pin passive; not a real crystal model but captures connectivity)
-    let y2 = Resistor::new("Y2", 0.0.ohm()); // 25 MHz crystal placeholder
+    let y2 = Crystal::new("Y2", 25.0.mhz());
     let y2_inst = ComponentInst::new("Y2", y2);
     d.add_component(&y2_inst);
     d.connect("Y2", "1", "W5500_XI");
@@ -444,7 +444,7 @@ pub fn build_spi_reference_design() -> Design {
     d.connect("U3", "EXRES1", "W5500_EXRES");
     d.connect("U3", "TOCAP", "W5500_TOCAP");
     d.connect("U3", "1V2O", "W5500_1V2O");
-    d.connect("U3", "VBG", "GND"); // band gap, float — tie to GND net (no drive)
+    // VBG: band-gap reference output — leave unconnected (floating) per datasheet
 
     // W5500 PMODE (pulled up via LED nets = auto-neg enabled)
     d.connect("U3", "PMODE0", "W5500_SPDLED");
@@ -475,6 +475,34 @@ pub fn build_spi_reference_design() -> Design {
 }
 
 // ── Analysis & reporting ─────────────────────────────────────────────
+
+/// ERC: flag any pin named "NC" that is connected to a net.
+///
+/// Pins named "NC" (no-connect) are defined in the part datasheet as
+/// "do not connect externally". A connection indicates a wiring error.
+pub fn erc_nc_pin_connected(d: &Design) -> Vec<Diagnostic> {
+    let mut diags = Vec::new();
+    for component in &d.components {
+        for pin in &component.pins {
+            if pin.name == "NC" || pin.name.starts_with("NC_") {
+                let nets = d.nets_of_pin(&component.refdes, &pin.name);
+                if !nets.is_empty() {
+                    diags.push(Diagnostic {
+                        code: "ERC:NC_CONNECTED".into(),
+                        severity: Severity::Error,
+                        message: format!(
+                            "NC pin {}.{} is connected to net(s): {:?}",
+                            component.refdes, pin.name, nets
+                        ),
+                        entities: vec![format!("{}.{}", component.refdes, pin.name)],
+                        hint: Some("Remove the connection — NC pins must float".into()),
+                    });
+                }
+            }
+        }
+    }
+    diags
+}
 
 /// Run ERC and decoupling synthesis on the reference design and print
 /// a human-readable summary to stdout.
@@ -583,6 +611,21 @@ pub fn run_analysis(d: &Design) {
     }
     println!();
 
+    // ── ERC: NC-pin checks ─────────────────────────────────────────
+    println!("── ERC: NC-pin checks ────────────────────────────────────────");
+    let nc_diags = erc_nc_pin_connected(d);
+    if nc_diags.is_empty() {
+        println!("  No NC-pin connection violations detected.");
+    } else {
+        for diag in &nc_diags {
+            println!(
+                "  [{:?}] {} — {}",
+                diag.severity, diag.code, diag.message
+            );
+        }
+    }
+    println!();
+
     // ── Decoupling synthesis ────────────────────────────────────────
     println!("── Decoupling synthesis ────────────────────────────────────");
     let result = synthesize_decoupling(d);
@@ -635,7 +678,7 @@ pub fn run_analysis(d: &Design) {
 
 #[cfg(test)]
 mod tests {
-    use copperleaf::{Block, Pin, Role};
+    use copperleaf::{Block, ComponentRecord, Limits, Pin, Role};
 
     use super::*;
 
@@ -840,5 +883,37 @@ mod tests {
         let d = build_spi_reference_design();
         let json = serde_json::to_string(&d);
         assert!(json.is_ok(), "design must serialize to JSON");
+    }
+
+    #[test]
+    fn nc_pins_are_not_connected() {
+        let d = build_spi_reference_design();
+        let diags = erc_nc_pin_connected(&d);
+        assert!(
+            diags.is_empty(),
+            "NC pin(s) must be floating: {:?}",
+            diags.iter().map(|d| &d.message).collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn reports_nc_pin_connected() {
+        let mut d = Design::default();
+        d.add_net(Net::ground());
+        d.components.push(ComponentRecord {
+            refdes: "U1".into(),
+            pins: vec![Pin {
+                name: "NC".into(),
+                role: Role::DigitalIO,
+                limits: Limits::new(0.0.volt(), 3.6.volt(), 0.01.amp()),
+                sig: None,
+            }],
+            constraints: vec![],
+        });
+        d.connect("U1", "NC", "GND");
+        let diags = erc_nc_pin_connected(&d);
+        assert_eq!(diags.len(), 1);
+        assert_eq!(diags[0].code, "ERC:NC_CONNECTED");
+        assert!(diags[0].message.contains("U1.NC"));
     }
 }

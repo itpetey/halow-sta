@@ -9,6 +9,6 @@ pub mod rp2354a;
 pub mod w5500;
 
 pub use ht_hc01::HtHc01;
-pub use passive::{Capacitor, Resistor};
+pub use passive::{Capacitor, Crystal, Resistor};
 pub use rp2354a::Rp2354a;
 pub use w5500::W5500;
