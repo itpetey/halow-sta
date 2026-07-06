@@ -11,6 +11,7 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 [[package]]
 name = "copperleaf"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-analysis",
  "copperleaf-backend-kicad",
@@ -23,6 +24,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-analysis"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
@@ -32,6 +34,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-backend-kicad"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-ir",
  "serde",
@@ -40,6 +43,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-core"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "serde",
  "uom",
@@ -48,6 +52,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-edsl"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
@@ -57,6 +62,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-ir"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-core",
  "petgraph",
@@ -66,6 +72,7 @@ dependencies = [
 [[package]]
 name = "copperleaf-parts"
 version = "0.1.0"
+source = "git+https://github.com/itpetey/copperleaf#00b945e7b9bd5bf80216c9dbd2e58335661a2fcd"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
