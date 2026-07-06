@@ -562,13 +562,14 @@ mod tests {
         d.add_net(Net::ground());
         d.components.push(ComponentRecord {
             refdes: "U1".into(),
-            pins: vec![Pin {
-                name: "NC".into(),
-                role: Role::DigitalIO,
-                limits: Limits::new(0.0.volt(), 3.6.volt(), 0.01.amp()),
-                sig: None,
-            }],
+            pins: vec![Pin::new(
+                "NC",
+                Role::DigitalIO,
+                Limits::new(0.0.volt(), 3.6.volt(), 0.01.amp()),
+                None,
+            )],
             constraints: vec![],
+            kicad_symbol: None,
         });
         d.connect("U1", "NC", "GND");
         let diags = copperleaf::run_erc(&d);
