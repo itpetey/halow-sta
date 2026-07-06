@@ -34,7 +34,7 @@ impl W5500 {
     pub fn new() -> Self {
         let spi_limits = Limits {
             v_min: 0.0.volt(),
-            v_max: 5.5.volt(), // 5V-tolerant I/O per datasheet
+            v_max: 5.5.volt(),  // 5V-tolerant I/O per datasheet
             i_max: 0.008.amp(), // 8 mA drive
         };
 
@@ -58,66 +58,148 @@ impl W5500 {
 
         let pins: Vec<Pin> = vec![
             // ── Ethernet PHY analog pins ──────────────────────────────────
-            Pin::new("TXP", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(SigSpec::rf_50ohm())),
-            Pin::new("TXN", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(SigSpec::rf_50ohm())),
-            Pin::new("RXP", Role::AnalogIn, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(SigSpec::rf_50ohm())),
-            Pin::new("RXN", Role::AnalogIn, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.050.amp(),
-            }, Some(SigSpec::rf_50ohm())),
-
+            Pin::new(
+                "TXP",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.050.amp(),
+                },
+                Some(SigSpec::rf_50ohm()),
+            ),
+            Pin::new(
+                "TXN",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.050.amp(),
+                },
+                Some(SigSpec::rf_50ohm()),
+            ),
+            Pin::new(
+                "RXP",
+                Role::AnalogIn,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.050.amp(),
+                },
+                Some(SigSpec::rf_50ohm()),
+            ),
+            Pin::new(
+                "RXN",
+                Role::AnalogIn,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.050.amp(),
+                },
+                Some(SigSpec::rf_50ohm()),
+            ),
             // ── Analog power/ground ────────────────────────────────────────
             Pin::new("AVDD", Role::PowerIn, pwr_limits, None),
             Pin::new("AGND", Role::Gnd, gnd_limits, None),
-
             // ── External bias / reference pins ─────────────────────────────
-            Pin::new("EXRES1", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, None), // → 12.4 kΩ to AGND
-            Pin::new("TOCAP", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, None), // → 4.7 µF to AGND
-            Pin::new("1V2O", Role::PowerOut, Limits {
-                v_min: 1.0.volt(), v_max: 1.4.volt(), i_max: 0.010.amp(),
-            }, None), // → 10 nF to GND (1.2V regulator output)
-            Pin::new("VBG", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, None), // band gap, leave floating
-
+            Pin::new(
+                "EXRES1",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.001.amp(),
+                },
+                None,
+            ), // → 12.4 kΩ to AGND
+            Pin::new(
+                "TOCAP",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.001.amp(),
+                },
+                None,
+            ), // → 4.7 µF to AGND
+            Pin::new(
+                "1V2O",
+                Role::PowerOut,
+                Limits {
+                    v_min: 1.0.volt(),
+                    v_max: 1.4.volt(),
+                    i_max: 0.010.amp(),
+                },
+                None,
+            ), // → 10 nF to GND (1.2V regulator output)
+            Pin::new(
+                "VBG",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.001.amp(),
+                },
+                None,
+            ), // band gap, leave floating
             // ── Crystal oscillator ─────────────────────────────────────────
-            Pin::new("XI", Role::AnalogIn, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, Some(SigSpec::spi_clk(25.0))),
-            Pin::new("XO", Role::AnalogOut, Limits {
-                v_min: 0.0.volt(), v_max: 3.63.volt(), i_max: 0.001.amp(),
-            }, None),
-
+            Pin::new(
+                "XI",
+                Role::AnalogIn,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.001.amp(),
+                },
+                Some(SigSpec::spi_clk(25.0)),
+            ),
+            Pin::new(
+                "XO",
+                Role::AnalogOut,
+                Limits {
+                    v_min: 0.0.volt(),
+                    v_max: 3.63.volt(),
+                    i_max: 0.001.amp(),
+                },
+                None,
+            ),
             // ── SPI interface (slave mode) ────────────────────────────────
-            Pin::new("SCSn", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
-            Pin::new("SCLK", Role::DigitalIO, spi_limits, Some(SigSpec::spi_clk(33.0))),
-            Pin::new("MISO", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
-            Pin::new("MOSI", Role::DigitalIO, spi_limits, Some(SigSpec::spi(33.0))),
-
+            Pin::new(
+                "SCSn",
+                Role::DigitalIO,
+                spi_limits,
+                Some(SigSpec::spi(33.0)),
+            ),
+            Pin::new(
+                "SCLK",
+                Role::DigitalIO,
+                spi_limits,
+                Some(SigSpec::spi_clk(33.0)),
+            ),
+            Pin::new(
+                "MISO",
+                Role::DigitalIO,
+                spi_limits,
+                Some(SigSpec::spi(33.0)),
+            ),
+            Pin::new(
+                "MOSI",
+                Role::DigitalIO,
+                spi_limits,
+                Some(SigSpec::spi(33.0)),
+            ),
             // ── Control / interrupt ───────────────────────────────────────
             Pin::new("INTn", Role::DigitalIO, dio_limits, None), // active-low IRQ out
             Pin::new("RSTn", Role::DigitalIO, dio_limits, None), // active-low reset in
-
             // ── PHY mode select (pull-ups → 111 = auto-neg) ──────────────
             Pin::new("PMODE0", Role::DigitalIO, dio_limits, None),
             Pin::new("PMODE1", Role::DigitalIO, dio_limits, None),
             Pin::new("PMODE2", Role::DigitalIO, dio_limits, None),
-
             // ── LED outputs ───────────────────────────────────────────────
             Pin::new("SPDLED", Role::DigitalIO, dio_limits, None),
             Pin::new("LINKLED", Role::DigitalIO, dio_limits, None),
             Pin::new("DUPLED", Role::DigitalIO, dio_limits, None),
             Pin::new("ACTLED", Role::DigitalIO, dio_limits, None),
-
             // ── Digital power/ground ───────────────────────────────────────
             Pin::new("VDD", Role::PowerIn, pwr_limits, None),
             Pin::new("GND", Role::Gnd, gnd_limits, None),

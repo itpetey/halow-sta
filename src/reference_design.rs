@@ -43,8 +43,10 @@
 //!
 //! GPIOs 14–29 free for USB, SWD, ADC, status LEDs, future expansion.
 
-use copperleaf::{ComponentInst, Constraint, Design, DesignExt, Net, NetClass, NetKind, SigSpec, UnitExt};
-use copperleaf::parts::Crystal;
+use copperleaf::{
+    ComponentInst, Constraint, Design, DesignExt, Net, NetClass, NetKind, SigSpec, UnitExt,
+    parts::Crystal,
+};
 
 use crate::parts::{HtHc01, Rp2354a, W5500};
 
@@ -336,8 +338,6 @@ pub fn run_analysis(d: &Design) {
         free_gpio.len()
     );
 }
-
-// ── Tests ────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {

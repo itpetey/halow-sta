@@ -40,7 +40,7 @@ impl Rp2354a {
         let dio_limits = Limits {
             v_min: 0.0.volt(),
             v_max: 3.63.volt(), // IOVDD abs max
-            i_max: 0.012.amp(),  // 12 mA drive strength max
+            i_max: 0.012.amp(), // 12 mA drive strength max
         };
 
         let pwr_limits = Limits {
@@ -76,7 +76,12 @@ impl Rp2354a {
             } else {
                 None // plain GPIO / control
             };
-            pins.push(Pin::new(format!("GPIO{}", n), Role::DigitalIO, dio_limits, sig));
+            pins.push(Pin::new(
+                format!("GPIO{}", n),
+                Role::DigitalIO,
+                dio_limits,
+                sig,
+            ));
         }
 
         // Power pins (IOVDD — IO supply, shared with HaLow VDD_IO and W5500)
