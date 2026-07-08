@@ -4,5 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-copperleaf = { git = "https://github.com/itpetey/copperleaf" }
+# copperleaf = { git = "https://github.com/itpetey/copperleaf" }
+# copperleaf-core = { git = "https://github.com/itpetey/copperleaf" }
+# copperleaf-ir = { git = "https://github.com/itpetey/copperleaf" }
+copperleaf = { path = "../copperleaf/crates/copperleaf" }
+copperleaf-core = { path = "../copperleaf/crates/core" }
+copperleaf-ir = { path = "../copperleaf/crates/ir" }
 serde_json = "1.0"

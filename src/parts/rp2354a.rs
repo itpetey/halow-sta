@@ -7,29 +7,37 @@
 //!
 //! # GPIO function mapping used in this design
 //!
-//! | GPIO | Function | Net name       | Connected to          |
-//! |------|----------|----------------|-----------------------|
-//! | 0    | SPI0 RX  | SDIO_D0        | HT-HC01 pad 17 (MISO) |
-//! | 1    | SPI0 CSn | SDIO_D3        | HT-HC01 pad 22 (CS)   |
-//! | 2    | SPI0 SCK | SDIO_CLK       | HT-HC01 pad 18 (SCK)  |
-//! | 3    | SPI0 TX  | SDIO_CMD       | HT-HC01 pad 21 (MOSI) |
-//! | 4    | SIO (IRQ)| SDIO_D1        | HT-HC01 pad 16 (INT)  |
-//! | 5    | SIO (OUT)| MM_RESET_N     | HT-HC01 pad 35 (RESET)|
-//! | 6    | SIO (OUT)| MM_WAKE        | HT-HC01 pad 36 (WAKE) |
-//! | 7    | SIO (IN) | MM_BUSY        | HT-HC01 pad 34 (BUSY) |
-//! | 8    | SPI1 RX  | W5500_MISO     | W5500 pin 34 (MISO)   |
-//! | 9    | SPI1 CSn | W5500_SCSn     | W5500 pin 32 (SCSn)   |
-//! | 10   | SPI1 SCK | W5500_SCLK     | W5500 pin 33 (SCLK)   |
-//! | 11   | SPI1 TX  | W5500_MOSI     | W5500 pin 35 (MOSI)   |
-//! | 12   | SIO (OUT)| W5500_RSTn     | W5500 pin 37 (RSTn)   |
-//! | 13   | SIO (IN) | W5500_INTn     | W5500 pin 36 (INTn)   |
+//! | GPIO | Function | Net name       | Connected to                         |
+//! |------|----------|----------------|--------------------------------------|
+//! | 0    | SPI0 RX  | SDIO_D0        | MM8108-MF15457 pin 12 (SPI_MISO)    |
+//! | 1    | SPI0 CSn | SDIO_D3        | MM8108-MF15457 pin 13 (SPI_CS)      |
+//! | 2    | SPI0 SCK | SDIO_CLK       | MM8108-MF15457 pin 17 (SPI_SCK)     |
+//! | 3    | SPI0 TX  | SDIO_CMD       | MM8108-MF15457 pin 16 (SPI_MOSI)    |
+//! | 4    | SIO (IRQ)| SDIO_D1        | MM8108-MF15457 pin 14 (SPI_INT)     |
+//! | 5    | SIO (OUT)| MM_RESET_N     | MM8108-MF15457 pin 4  (RESET_N)     |
+//! | 6    | SIO (OUT)| MM_WAKE        | MM8108-MF15457 pin 5  (WAKE)        |
+//! | 7    | SIO (IN) | MM_BUSY        | MM8108-MF15457 pin 29 (BUSY)        |
+//! | 8    | SPI1 RX  | W5500_MISO     | W5500 pin 34 (MISO)                 |
+//! | 9    | SPI1 CSn | W5500_SCSn     | W5500 pin 32 (SCSn)                 |
+//! | 10   | SPI1 SCK | W5500_SCLK     | W5500 pin 33 (SCLK)                 |
+//! | 11   | SPI1 TX  | W5500_MOSI     | W5500 pin 35 (MOSI)                 |
+//! | 12   | SIO (OUT)| W5500_RSTn     | W5500 pin 37 (RSTn)                 |
+//! | 13   | SIO (IN) | W5500_INTn     | W5500 pin 36 (INTn)                 |
 //!
 //! GPIOs 14–29 remain free for USB, SWD, ADC, or future expansion.
 
-use copperleaf::{Block, Limits, Pin, Role, SigSpec, UnitExt};
+use copperleaf::{Component, Constraint, Limits, Pin, Role, SigSpec, UnitExt};
 
 /// Raspberry Pi RP2354A (QFN-60, 2 MB internal flash, 30 GPIOs).
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Component)]
+#[component(
+    symbol = "MCU_RaspberryPi:RP2354A",
+    constraints(
+        Constraint::LengthMatch { group: "SPI0_BUS".into(), skew_ps: 200.0 },
+        Constraint::LengthMatch { group: "SPI1_BUS".into(), skew_ps: 500.0 },
+        Constraint::MaxJunction { temp: 85.0.celsius() },
+    )
+)]
 pub struct Rp2354a {
     pins: Vec<Pin>,
 }
@@ -58,6 +66,8 @@ impl Rp2354a {
         let mut pins: Vec<Pin> = Vec::new();
 
         // 30 GPIO pins (GPIO0–GPIO29, QFN-60 package)
+        // Note: GPIO26–GPIO29 have the ADC function on the same pin; the KiCad
+        // symbol names them "GPIO26/ADC0"–"GPIO29/ADC3".
         for n in 0..30u8 {
             let sig = if n <= 3 {
                 // SPI0 pins — 50 MHz capable
@@ -76,44 +86,21 @@ impl Rp2354a {
             } else {
                 None // plain GPIO / control
             };
-            pins.push(Pin::new(
-                format!("GPIO{}", n),
-                Role::DigitalIO,
-                dio_limits,
-                sig,
-            ));
+            let name = match n {
+                26 => "GPIO26/ADC0".to_string(),
+                27 => "GPIO27/ADC1".to_string(),
+                28 => "GPIO28/ADC2".to_string(),
+                29 => "GPIO29/ADC3".to_string(),
+                _ => format!("GPIO{}", n),
+            };
+            pins.push(Pin::new(name, Role::DigitalIO, dio_limits, sig));
         }
 
-        // Power pins (IOVDD — IO supply, shared with HaLow VDD_IO and W5500)
+        // Power pins (IOVDD — IO supply, shared with HaLow VDDIO and W5500)
         pins.push(Pin::new("IOVDD", Role::PowerIn, pwr_limits, None));
         // Multiple GND pins modelled as a single logical pin (all tie to GND net)
         pins.push(Pin::new("GND", Role::Gnd, gnd_limits, None));
 
         Self { pins }
-    }
-}
-
-impl Block for Rp2354a {
-    fn pins(&self) -> &[Pin] {
-        &self.pins
-    }
-    fn constraints(&self) -> Vec<copperleaf::Constraint> {
-        use copperleaf::Constraint;
-        vec![
-            // SPI0 length matching for HaLow bus
-            Constraint::LengthMatch {
-                group: "SPI0_BUS".into(),
-                skew_ps: 200.0,
-            },
-            // SPI1 length matching for W5500 bus
-            Constraint::LengthMatch {
-                group: "SPI1_BUS".into(),
-                skew_ps: 500.0, // more relaxed for 33 MHz
-            },
-            // Max junction temp per RP2350 datasheet
-            Constraint::MaxJunction {
-                temp: 85.0.celsius(),
-            },
-        ]
     }
 }

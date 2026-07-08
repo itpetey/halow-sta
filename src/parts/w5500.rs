@@ -21,10 +21,17 @@
 //! | C12-C19   | 100 nF    | VDD/AVDD   | Decoupling per supply pin   |
 //! | R24-R26   | 10 kΩ     | PMODE[2:0] | Pull-ups (auto-neg enabled)|
 
-use copperleaf::{Block, Limits, Pin, Role, SigSpec, UnitExt};
+use copperleaf::{Component, Constraint, Limits, Pin, Role, SigSpec, UnitExt};
 
 /// W5500 Ethernet controller (48-LQFP, integrated 10/100 PHY).
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Component)]
+#[component(
+    symbol = "Interface_Ethernet:W5500",
+    constraints(
+        Constraint::Decoupling { values: vec![100.0.nf(), 10.0.uf()], per_pin: true },
+        Constraint::MaxJunction { temp: 125.0.celsius() },
+    )
+)]
 pub struct W5500 {
     pins: Vec<Pin>,
 }
@@ -144,7 +151,7 @@ impl W5500 {
             ), // band gap, leave floating
             // ── Crystal oscillator ─────────────────────────────────────────
             Pin::new(
-                "XI",
+                "XI/CLKIN",
                 Role::AnalogIn,
                 Limits {
                     v_min: 0.0.volt(),
@@ -165,7 +172,7 @@ impl W5500 {
             ),
             // ── SPI interface (slave mode) ────────────────────────────────
             Pin::new(
-                "SCSn",
+                "~{SCS}",
                 Role::DigitalIO,
                 spi_limits,
                 Some(SigSpec::spi(33.0)),
@@ -189,8 +196,8 @@ impl W5500 {
                 Some(SigSpec::spi(33.0)),
             ),
             // ── Control / interrupt ───────────────────────────────────────
-            Pin::new("INTn", Role::DigitalIO, dio_limits, None), // active-low IRQ out
-            Pin::new("RSTn", Role::DigitalIO, dio_limits, None), // active-low reset in
+            Pin::new("~{INT}", Role::DigitalIO, dio_limits, None), // active-low IRQ out
+            Pin::new("~{RST}", Role::DigitalIO, dio_limits, None), // active-low reset in
             // ── PHY mode select (pull-ups → 111 = auto-neg) ──────────────
             Pin::new("PMODE0", Role::DigitalIO, dio_limits, None),
             Pin::new("PMODE1", Role::DigitalIO, dio_limits, None),
@@ -206,25 +213,5 @@ impl W5500 {
         ];
 
         Self { pins }
-    }
-}
-
-impl Block for W5500 {
-    fn pins(&self) -> &[Pin] {
-        &self.pins
-    }
-    fn constraints(&self) -> Vec<copperleaf::Constraint> {
-        use copperleaf::Constraint;
-        vec![
-            // Decoupling for the digital + analog supply pins
-            Constraint::Decoupling {
-                values: vec![100.0.nf(), 10.0.uf()],
-                per_pin: true,
-            },
-            // Max junction temperature
-            Constraint::MaxJunction {
-                temp: 125.0.celsius(), // per datasheet §5.3
-            },
-        ]
     }
 }

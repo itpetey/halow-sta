@@ -1,7 +1,7 @@
-//! HT-HC01 V2 WiFi HaLow — SPI reference design in copperleaf.
+//! MM8108-MF15457 Wi-Fi HaLow — SPI reference design in copperleaf.
 //!
 //! This binary builds the complete SPI reference design from the
-//! HT-HC01 V2 datasheet (§4.1) using the `copperleaf` EDA library,
+//! MM8108-MF15457 datasheet using the `copperleaf` EDA library,
 //! then runs ERC and decoupling synthesis.
 
 use reference_design::{build_spi_reference_design, run_analysis};

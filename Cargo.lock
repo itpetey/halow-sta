@@ -11,7 +11,6 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 [[package]]
 name = "copperleaf"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-analysis",
  "copperleaf-backend-kicad",
@@ -24,7 +23,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-analysis"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
@@ -34,7 +32,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-backend-kicad"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
@@ -45,7 +42,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-core"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "serde",
  "uom",
@@ -54,7 +50,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-derive"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -64,7 +59,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-edsl"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-core",
  "copperleaf-derive",
@@ -75,7 +69,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-ir"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-core",
  "petgraph",
@@ -85,7 +78,6 @@ dependencies = [
 [[package]]
 name = "copperleaf-parts"
 version = "0.1.0"
-source = "git+https://github.com/itpetey/copperleaf#ff4fbc5243bd6a3984a3e5d0a526fb916ef4fe3c"
 dependencies = [
  "copperleaf-core",
  "copperleaf-ir",
@@ -114,6 +106,8 @@ name = "halow-proto"
 version = "0.1.0"
 dependencies = [
  "copperleaf",
+ "copperleaf-core",
+ "copperleaf-ir",
  "serde_json",
 ]
 
