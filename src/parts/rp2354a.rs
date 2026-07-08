@@ -98,8 +98,11 @@ impl Rp2354a {
 
         // Power pins (IOVDD — IO supply, shared with HaLow VDDIO and W5500)
         pins.push(Pin::new("IOVDD", Role::PowerIn, pwr_limits, None));
-        // Multiple GND pins modelled as a single logical pin (all tie to GND net)
+        // Main digital ground and voltage-regulator ground (both tie to GND net).
+        // The KiCad symbol exposes both GND and VREG_PGND; modelling both keeps
+        // ERC clean and matches the QFN-60 package pinout.
         pins.push(Pin::new("GND", Role::Gnd, gnd_limits, None));
+        pins.push(Pin::new("VREG_PGND", Role::Gnd, gnd_limits, None));
 
         Self { pins }
     }

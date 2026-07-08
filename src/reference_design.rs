@@ -251,7 +251,9 @@ pub fn build_spi_reference_design() -> Design {
     d.wire("U1.VBAT", "VBAT");
     d.wire("U1.VBAT_TX", "VBAT_TX");
     d.wire("U1.VDDIO", "VDD_IO");
-    d.wire("U1.GND", "GND");
+    for n in 1u8..=8 {
+        d.wire(&format!("U1.GND_{}", n), "GND");
+    }
 
     // VDD_USB — tied to GND (USB not used in SPI mode)
     d.wire("U1.VDD_USB", "GND");
@@ -316,6 +318,7 @@ pub fn build_spi_reference_design() -> Design {
     // RP2354A power
     d.wire("U2.IOVDD", "VDD_IO");
     d.wire("U2.GND", "GND");
+    d.wire("U2.VREG_PGND", "GND");
 
     // RP2354A free GPIOs (GPIO14–29) — tied to GND as unused.
     // Available for USB, SWD, ADC, status LEDs, or future expansion.
@@ -419,6 +422,7 @@ mod tests {
         assert_eq!(gpio_count, 30);
         assert!(mcu.pins().iter().any(|p| p.name == "IOVDD"));
         assert!(mcu.pins().iter().any(|p| p.name == "GND"));
+        assert!(mcu.pins().iter().any(|p| p.name == "VREG_PGND"));
     }
 
     #[test]
