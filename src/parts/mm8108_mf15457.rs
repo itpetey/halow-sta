@@ -146,14 +146,14 @@ impl Mm8108Mf15457 {
     }
 }
 
-impl Default for Mm8108Mf15457 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Component for Mm8108Mf15457 {
     fn pins(&self) -> &[Pin] {
         &self.pins
+    }
+}
+
+impl Default for Mm8108Mf15457 {
+    fn default() -> Self {
+        Self::new()
     }
 }

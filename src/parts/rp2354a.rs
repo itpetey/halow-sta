@@ -173,14 +173,14 @@ impl Rp2354a {
     }
 }
 
-impl Default for Rp2354a {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl Component for Rp2354a {
     fn pins(&self) -> &[Pin] {
         &self.pins
+    }
+}
+
+impl Default for Rp2354a {
+    fn default() -> Self {
+        Self::new()
     }
 }
