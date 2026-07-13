@@ -43,14 +43,54 @@
 //! | 37  | GPIO10   | GPIO        |                       |
 //! | 38  | GND_8    | Ground      |                       |
 
-use copperleaf_model::{Component, Pin, PinId, Role, units::UnitExt};
+use copperleaf_model::{Component, Pin, PinRef, Role, units::UnitExt};
 
 /// Morse Micro Wi-Fi HaLow module
 pub struct Mm8108Mf15457 {
     pins: [Pin; 38],
 }
 
+#[allow(dead_code)]
 impl Mm8108Mf15457 {
+    pub const GND_1: PinRef = PinRef("GND_1");
+    pub const ANT: PinRef = PinRef("ANT");
+    pub const GND_2: PinRef = PinRef("GND_2");
+    pub const RESET_N: PinRef = PinRef("RESET_N");
+    pub const WAKE: PinRef = PinRef("WAKE");
+    pub const JTAG_TMS: PinRef = PinRef("JTAG_TMS");
+    pub const JTAG_TCK: PinRef = PinRef("JTAG_TCK");
+    pub const JTAG_TDO: PinRef = PinRef("JTAG_TDO");
+    pub const JTAG_TDI: PinRef = PinRef("JTAG_TDI");
+    pub const VBAT: PinRef = PinRef("VBAT");
+    pub const GND_3: PinRef = PinRef("GND_3");
+    pub const SDIO_D0: PinRef = PinRef("SDIO_D0");
+    pub const SDIO_D3: PinRef = PinRef("SDIO_D3");
+    pub const SDIO_D1: PinRef = PinRef("SDIO_D1");
+    pub const SDIO_D2: PinRef = PinRef("SDIO_D2");
+    pub const SDIO_CMD: PinRef = PinRef("SDIO_CMD");
+    pub const SDIO_CLK: PinRef = PinRef("SDIO_CLK");
+    pub const GPIO5: PinRef = PinRef("GPIO5");
+    pub const GPIO4: PinRef = PinRef("GPIO4");
+    pub const GND_4: PinRef = PinRef("GND_4");
+    pub const GPIO3: PinRef = PinRef("GPIO3");
+    pub const VDDIO: PinRef = PinRef("VDDIO");
+    pub const GND_5: PinRef = PinRef("GND_5");
+    pub const VBAT_TX: PinRef = PinRef("VBAT_TX");
+    pub const VDD_USB: PinRef = PinRef("VDD_USB");
+    pub const GND_6: PinRef = PinRef("GND_6");
+    pub const USB_D_N: PinRef = PinRef("USB_D_N");
+    pub const USB_D_P: PinRef = PinRef("USB_D_P");
+    pub const BUSY: PinRef = PinRef("BUSY");
+    pub const GND_7: PinRef = PinRef("GND_7");
+    pub const GPIO1: PinRef = PinRef("GPIO1");
+    pub const GPIO0: PinRef = PinRef("GPIO0");
+    pub const GPIO6: PinRef = PinRef("GPIO6");
+    pub const GPIO7: PinRef = PinRef("GPIO7");
+    pub const GPIO8: PinRef = PinRef("GPIO8");
+    pub const GPIO9: PinRef = PinRef("GPIO9");
+    pub const GPIO10: PinRef = PinRef("GPIO10");
+    pub const GND_8: PinRef = PinRef("GND_8");
+
     /// Create an MM8108-MF15457 module instance
     pub fn new() -> Self {
         let pins = [
@@ -60,25 +100,33 @@ impl Mm8108Mf15457 {
             Pin::build("RESET_N").dio(),
             Pin::build("WAKE").dio(),
             Pin::build("JTAG_TMS").dio(),
-            Pin::build("JTAG_TCK").dio(),
+            Pin::build("JTAG_TCK").clk(1.0),
             Pin::build("JTAG_TDO").dio(),
             Pin::build("JTAG_TDI").dio(),
-            Pin::build("VBAT").pwr(3.0.volt(), 3.6.volt(), 0.3.amp()),
+            Pin::build("VBAT")
+                .pwr(3.0.volt(), 3.6.volt(), 0.3.amp())
+                .pin(),
             Pin::build("GND_3").gnd(),
-            Pin::build("SDIO_D0").spi(),
-            Pin::build("SDIO_D3").spi(),
-            Pin::build("SDIO_D1").spi(),
+            Pin::build("SDIO_D0").spi(50.0),
+            Pin::build("SDIO_D3").spi(50.0),
+            Pin::build("SDIO_D1").spi(50.0),
             Pin::build("SDIO_D2").dio(),
-            Pin::build("SDIO_CMD").spi(),
-            Pin::build("SDIO_CLK").clk(),
+            Pin::build("SDIO_CMD").spi(50.0),
+            Pin::build("SDIO_CLK").clk(50.0),
             Pin::build("GPIO5").dio(),
             Pin::build("GPIO4").dio(),
             Pin::build("GND_4").gnd(),
             Pin::build("GPIO3").dio(),
-            Pin::build("VDDIO").pwr(1.8.volt(), 3.6.volt(), 0.05.amp()),
+            Pin::build("VDDIO")
+                .pwr(1.8.volt(), 3.6.volt(), 0.05.amp())
+                .pin(),
             Pin::build("GND_5").gnd(),
-            Pin::build("VBAT_TX").pwr(3.0.volt(), 3.6.volt(), 0.5.amp()),
-            Pin::build("VDD_USB").pwr(3.0.volt(), 3.6.volt(), 0.1.amp()),
+            Pin::build("VBAT_TX")
+                .pwr(3.0.volt(), 3.6.volt(), 0.5.amp())
+                .pin(),
+            Pin::build("VDD_USB")
+                .pwr(3.0.volt(), 3.6.volt(), 0.1.amp())
+                .pin(),
             Pin::build("GND_6").gnd(),
             Pin::build("USB_D_N").dio(),
             Pin::build("USB_D_P").dio(),
@@ -98,15 +146,13 @@ impl Mm8108Mf15457 {
     }
 }
 
+impl Default for Mm8108Mf15457 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Component for Mm8108Mf15457 {
-    fn pin(&self, id: PinId) -> Option<&Pin> {
-        self.pins.iter().find(|pin| pin.id() == id)
-    }
-
-    fn pin_name(&self, name: &str) -> Option<&Pin> {
-        self.pins.iter().find(|pin| pin.name() == name)
-    }
-
     fn pins(&self) -> &[Pin] {
         &self.pins
     }

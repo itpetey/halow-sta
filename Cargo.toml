@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 copperleaf-model = { path = "../../copperleaf/new/crates/model" }
 copperleaf-parts = { path = "../../copperleaf/new/crates/parts" }
+copperleaf-backend-kicad = { path = "../../copperleaf/new/crates/backend-kicad" }

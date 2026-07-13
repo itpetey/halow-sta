@@ -21,17 +21,76 @@
 //!
 //! ~TODO - Fix Pinout!~ Name/Purpose columns are switched around, Notes should be deleted to make this generic, Pin should be 1-based
 
-use copperleaf_model::{Component, Pin, PinId, units::UnitExt};
+use copperleaf_model::{Component, Pin, PinRef, units::UnitExt};
 
 pub struct Rp2354a {
     pins: [Pin; 60],
 }
 
+#[allow(dead_code)]
 impl Rp2354a {
+    pub const IOVDD: PinRef = PinRef("IOVDD");
+    pub const DVDD: PinRef = PinRef("DVDD");
+    pub const GPIO0: PinRef = PinRef("GPIO0");
+    pub const GPIO1: PinRef = PinRef("GPIO1");
+    pub const GPIO2: PinRef = PinRef("GPIO2");
+    pub const GPIO3: PinRef = PinRef("GPIO3");
+    pub const GPIO4: PinRef = PinRef("GPIO4");
+    pub const GPIO5: PinRef = PinRef("GPIO5");
+    pub const GPIO6: PinRef = PinRef("GPIO6");
+    pub const GPIO7: PinRef = PinRef("GPIO7");
+    pub const GPIO8: PinRef = PinRef("GPIO8");
+    pub const GPIO9: PinRef = PinRef("GPIO9");
+    pub const GPIO10: PinRef = PinRef("GPIO10");
+    pub const GPIO11: PinRef = PinRef("GPIO11");
+    pub const GPIO12: PinRef = PinRef("GPIO12");
+    pub const GPIO13: PinRef = PinRef("GPIO13");
+    pub const GPIO14: PinRef = PinRef("GPIO14");
+    pub const GPIO15: PinRef = PinRef("GPIO15");
+    pub const GPIO16: PinRef = PinRef("GPIO16");
+    pub const GPIO17: PinRef = PinRef("GPIO17");
+    pub const GPIO18: PinRef = PinRef("GPIO18");
+    pub const GPIO19: PinRef = PinRef("GPIO19");
+    pub const GPIO20: PinRef = PinRef("GPIO20");
+    pub const GPIO21: PinRef = PinRef("GPIO21");
+    pub const GPIO22: PinRef = PinRef("GPIO22");
+    pub const GPIO23: PinRef = PinRef("GPIO23");
+    pub const GPIO24: PinRef = PinRef("GPIO24");
+    pub const GPIO25: PinRef = PinRef("GPIO25");
+    pub const GPIO26_ADC0: PinRef = PinRef("GPIO26_ADC0");
+    pub const GPIO27_ADC1: PinRef = PinRef("GPIO27_ADC1");
+    pub const GPIO28_ADC2: PinRef = PinRef("GPIO28_ADC2");
+    pub const GPIO29_ADC3: PinRef = PinRef("GPIO29_ADC3");
+    pub const XIN: PinRef = PinRef("XIN");
+    pub const XOUT: PinRef = PinRef("XOUT");
+    pub const SWCLK: PinRef = PinRef("SWCLK");
+    pub const SWDIO: PinRef = PinRef("SWDIO");
+    pub const RUN: PinRef = PinRef("RUN");
+    pub const ADC_AVDD: PinRef = PinRef("ADC_AVDD");
+    pub const VREG_AVDD: PinRef = PinRef("VREG_AVDD");
+    pub const VREG_PGND: PinRef = PinRef("VREG_PGND");
+    pub const VREG_LX: PinRef = PinRef("VREG_LX");
+    pub const VREG_VIN: PinRef = PinRef("VREG_VIN");
+    pub const VREG_FB: PinRef = PinRef("VREG_FB");
+    pub const USB_DM: PinRef = PinRef("USB_DM");
+    pub const USB_DP: PinRef = PinRef("USB_DP");
+    pub const USB_OTP_VDD: PinRef = PinRef("USB_OTP_VDD");
+    pub const QSPI_IOVDD: PinRef = PinRef("QSPI_IOVDD");
+    pub const QSPI_SD3: PinRef = PinRef("QSPI_SD3");
+    pub const QSPI_SCLK: PinRef = PinRef("QSPI_SCLK");
+    pub const QSPI_SD0: PinRef = PinRef("QSPI_SD0");
+    pub const QSPI_SD2: PinRef = PinRef("QSPI_SD2");
+    pub const QSPI_SD1: PinRef = PinRef("QSPI_SD1");
+    pub const QSPI_SS: PinRef = PinRef("QSPI_SS");
+
     /// Create a new RP2354A model instance
     pub fn new() -> Self {
-        let iovdd = Pin::build("IOVDD").pwr(1.8.volt(), 3.3.volt(), 0.1.amp());
-        let dvdd = Pin::build("DVDD").pwr(1.1.volt(), 1.1.volt(), 0.1.amp());
+        let iovdd = Pin::build("IOVDD")
+            .pwr(1.8.volt(), 3.3.volt(), 0.1.amp())
+            .pin();
+        let dvdd = Pin::build("DVDD")
+            .pwr(1.1.volt(), 1.1.volt(), 0.1.amp())
+            .pin();
 
         let pins = [
             iovdd.clone(),
@@ -54,10 +113,10 @@ impl Rp2354a {
             Pin::build("GPIO14").dio(),
             Pin::build("GPIO15").dio(),
             iovdd.clone(),
-            Pin::build("XIN").clk(),
-            Pin::build("XOUT").clk(),
+            Pin::build("XIN").clk(12.0),
+            Pin::build("XOUT").clk(12.0),
             dvdd.clone(),
-            Pin::build("SWCLK").clk(),
+            Pin::build("SWCLK").clk(1.0),
             Pin::build("SWDIO").dio(),
             Pin::build("RUN").dio(),
             Pin::build("GPIO16").dio(),
@@ -77,65 +136,50 @@ impl Rp2354a {
             Pin::build("GPIO27_ADC1").dio(),
             Pin::build("GPIO28_ADC2").dio(),
             Pin::build("GPIO29_ADC3").dio(),
-            Pin::build("ADC_AVDD").pwr(3.3.volt(), 3.3.volt(), 0.1.amp()),
+            Pin::build("ADC_AVDD")
+                .pwr_fixed(3.3.volt(), 0.1.amp())
+                .pin(),
             iovdd,
-            Pin::build("VREG_AVDD").pwr(0.0.volt(), 0.0.volt(), 0.0.amp()), // @todo
+            Pin::build("VREG_AVDD")
+                .pwr(1.1.volt(), 1.1.volt(), 0.0.amp())
+                .pin(), // @todo
             Pin::build("VREG_PGND").gnd(),
-            Pin::build("VREG_LX").pwr(0.0.volt(), 0.0.volt(), 0.0.amp()), // @todo
-            Pin::build("VREG_VIN").pwr(2.7.volt(), 5.5.volt(), 0.0.amp()), // @todo
-            Pin::build("VREG_FB").pwr(0.0.volt(), 0.0.volt(), 0.0.amp()), // @todo
+            Pin::build("VREG_LX")
+                .pwr(0.0.volt(), 0.0.volt(), 0.0.amp())
+                .pin(), // @todo
+            Pin::build("VREG_VIN")
+                .pwr(2.7.volt(), 5.5.volt(), 0.0.amp())
+                .pin(), // @todo
+            Pin::build("VREG_FB")
+                .pwr(0.0.volt(), 0.0.volt(), 0.0.amp())
+                .pin(), // @todo
             Pin::build("USB_DM").dio(),
             Pin::build("USB_DP").dio(),
-            Pin::build("USB_OTP_VDD").pwr(3.3.volt(), 3.3.volt(), 0.1.amp()),
-            Pin::build("QSPI_IOVDD").pwr(1.8.volt(), 3.3.volt(), 0.1.amp()), // @todo
+            Pin::build("USB_OTP_VDD")
+                .pwr_fixed(3.3.volt(), 0.1.amp())
+                .pin(),
+            Pin::build("QSPI_IOVDD")
+                .pwr(1.8.volt(), 3.3.volt(), 0.1.amp())
+                .pin(), // @todo
             Pin::build("QSPI_SD3").dio(),
-            Pin::build("QSPI_SCLK").clk(),
+            Pin::build("QSPI_SCLK").clk(50.0),
             Pin::build("QSPI_SD0").dio(),
             Pin::build("QSPI_SD2").dio(),
             Pin::build("QSPI_SD1").dio(),
             Pin::build("QSPI_SS").dio(),
         ];
 
-        // let dio_limits = Limits {
-        //     v_min: 0.0.volt(),
-        //     v_max: 3.63.volt(), // IOVDD abs max
-        //     i_max: 0.012.amp(), // 12 mA drive strength max
-        // };
-
-        // for n in 0..30u8 {
-        // let sig = if n <= 3 {
-        //     // SPI0 pins — 50 MHz capable
-        //     if n == 2 {
-        //         Some(SigSpec::spi_clk(50.0))
-        //     } else {
-        //         Some(SigSpec::spi(50.0))
-        //     }
-        // } else if (8..=11).contains(&n) {
-        //     // SPI1 pins — 33 MHz (W5500 practical max)
-        //     if n == 10 {
-        //         Some(SigSpec::spi_clk(33.0))
-        //     } else {
-        //         Some(SigSpec::spi(33.0))
-        //     }
-        // } else {
-        //     None // plain GPIO / control
-        // // };
-        // pins.push(Pin::new(name, Role::DigitalIO, dio_limits, sig));
-        // }
-
         Self { pins }
     }
 }
 
+impl Default for Rp2354a {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Component for Rp2354a {
-    fn pin(&self, id: PinId) -> Option<&Pin> {
-        self.pins.iter().find(|pin| pin.id() == id)
-    }
-
-    fn pin_name(&self, name: &str) -> Option<&Pin> {
-        self.pins.iter().find(|pin| pin.name() == name)
-    }
-
     fn pins(&self) -> &[Pin] {
         &self.pins
     }
