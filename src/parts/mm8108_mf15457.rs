@@ -1,172 +1,113 @@
 //! Morse Micro MM8108-MF15457 Wi-Fi HaLow module (MM8108 SoC).
 //!
-//! All 38 pins modelled per the datasheet pin table (Rev. 4, §2).
-//! Pin names mirror the datasheet so connections read naturally.
+//! # Pinout
 //!
-//! # Key differences from HT-HC01 V2 (previous design)
-//!
-//! - **Single 3.3V supply** — no separate VDD_FEM (front-end integrated)
-//! - **Integrated 26dBm PA + LNA** — better range, simpler power rail
-//! - **Up to 43Mbps PHY** — 256-QAM @ 8MHz (vs 32.5Mbps on MM6108)
-//! - **Pre-certified** — FCC modular approval (FCC ID: 2A74O-737B5B)
-//! - **USB 2.0 HS** interface available (not used in this SPI design)
-//!
-//! # SPI mode pin multiplexing
-//!
-//! | Pin | Primary  | SPI alt  |
-//! |-----|----------|----------|
-//! | 12  | SDIO_D0  | SPI_MISO |
-//! | 13  | SDIO_D3  | SPI_CS   |
-//! | 14  | SDIO_D1  | SPI_INT  |
-//! | 16  | SDIO_CMD | SPI_MOSI |
-//! | 17  | SDIO_CLK | SPI_SCK  |
-//!
-//! # Power rails (all 3.3V in this design)
-//!
-//! | Supply    | Range     | Typ  | Notes                        |
-//! |-----------|-----------|------|------------------------------|
-//! | VBAT      | 3.0–3.6 V | 3.3  | Main SoC supply              |
-//! | VBAT_TX   | 3.0–3.6 V | 3.3  | PA supply                    |
-//! | VDDIO     | 1.8–3.6 V | 3.3  | Digital I/O supply           |
-//! | VDD_USB   | 3.0–3.6 V | —    | USB supply (GND when unused) |
+//! | Pin | Name     | Purpose     | Notes                 |
+//! |-----|----------|-------------|-----------------------|
+//! | 1   | GND_1    | Ground      |                       |
+//! | 2   | ANT      | Antenna     |                       |
+//! | 3   | GND_2    | Ground      |                       |
+//! | 4   | RESET_N  | Reset       | Pull low to reset     |
+//! | 5   | WAKE     | Wake        | Pull ? to wake        |
+//! | 6   | JTAG_TMS | JTAG        | alt: GPIO15           |
+//! | 7   | JTAG_TCK | JTAG        | alt: GPIO13           |
+//! | 8   | JTAG_TDO | JTAG        | alt: GPIO16           |
+//! | 9   | JTAG_TDI | JTAG        | alt: GPIO14           |
+//! | 10  | VBAT     | Supply      | 3V3 battery power     |
+//! | 11  | GND_3    | Ground      |                       |
+//! | 12  | SDIO_D0  | SDIO/SPI    | alt: SPI_MISO         |
+//! | 13  | SDIO_D3  | SDIO/SPI    | alt: SPI_CS           |
+//! | 14  | SDIO_D1  | SDIO/SPI    | alt: SPI_INT          |
+//! | 15  | SDIO_D2  | SDIO/SPI    | (unused in SPI mode)  |
+//! | 16  | SDIO_CMD | SDIO/SPI    | alt: SPI_MOSI         |
+//! | 17  | SDIO_CLK | SDIO/SPI    | alt: SPI_SCK          |
+//! | 18  | GPIO5    | GPIO        |                       |
+//! | 19  | GPIO4    | GPIO        |                       |
+//! | 20  | GND_4    | Ground      |                       |
+//! | 21  | GPIO3    | GPIO        |                       |
+//! | 22  | VDDIO    | Supply      | Host power for I/O    |
+//! | 23  | GND_5    | Ground      |                       |
+//! | 24  | VBAT_TX  | Supply      | 3V3 TX power          |
+//! | 25  | VDD_USB  | Supply      | USB power             |
+//! | 26  | GND_6    | Ground      |                       |
+//! | 27  | USB_D_N  | USB DM      | Floating in SPI mode  |
+//! | 28  | USB_D_P  | USB DP      | Floating in SPI mode  |
+//! | 29  | BUSY     | Busy signal |                       |
+//! | 30  | GND_7    | Ground      |                       |
+//! | 31  | GPIO1    | GPIO        |                       |
+//! | 32  | GPIO0    | GPIO        |                       |
+//! | 33  | GPIO6    | GPIO        |                       |
+//! | 34  | GPIO7    | GPIO        |                       |
+//! | 35  | GPIO8    | GPIO        |                       |
+//! | 36  | GPIO9    | GPIO        |                       |
+//! | 37  | GPIO10   | GPIO        |                       |
+//! | 38  | GND_8    | Ground      |                       |
 
-use copperleaf::{Component, Constraint, Limits, Pin, Role, SigSpec, UnitExt};
+use copperleaf_model::{Component, Pin, PinId, Role, units::UnitExt};
 
-/// Wi-Fi HaLow module with 38 pins, SPI interface active.
-#[derive(Clone, Debug, Component)]
-#[component(
-    symbol = "MM8108-MF15457",
-    symbol_lib_path = "components/mm8108-mf15457.kicad_sym",
-    constraints(
-        Constraint::Decoupling { values: vec![100.0.nf(), 10.0.uf()], per_pin: true },
-        Constraint::LengthMatch { group: "SPI_BUS".into(), skew_ps: 200.0 },
-        Constraint::MaxJunction { temp: 85.0.celsius() },
-    )
-)]
+/// Morse Micro Wi-Fi HaLow module
 pub struct Mm8108Mf15457 {
-    pins: Vec<Pin>,
+    pins: [Pin; 38],
 }
 
 impl Mm8108Mf15457 {
-    /// Create an MM8108-MF15457 module instance with all 38 pins defined.
+    /// Create an MM8108-MF15457 module instance
     pub fn new() -> Self {
-        let pins: Vec<Pin> = vec![
-            // ── Pins 1–5: GND, ANT, GND, RESET, WAKE ──────────────────
-            gnd_pin("GND_1"),                                    // Pin 1
-            Pin::new("ANT", Role::AnalogIn, rf_limits(), None), // Pin 2
-            gnd_pin("GND_2"),                                    // Pin 3
-            dio_pin("RESET_N"),                                 // Pin 4  (active-low reset)
-            dio_pin("WAKE"),                                    // Pin 5  (external wake)
-            // ── Pins 6–9: JTAG (pull-down when unused) ────────────────
-            dio_pin("JTAG_TMS"), // Pin 6  alt: GPIO15
-            dio_pin("JTAG_TCK"), // Pin 7  alt: GPIO13
-            dio_pin("JTAG_TDO"), // Pin 8  alt: GPIO16
-            dio_pin("JTAG_TDI"), // Pin 9  alt: GPIO14
-            // ── Pins 10–11: VBAT, GND ──────────────────────────────────
-            pwr_pin("VBAT", 3.0, 3.6, 0.3), // Pin 10  3.3 V main supply
-            gnd_pin("GND_3"),                // Pin 11
-            // ── Pins 12–17: SDIO / SPI bus ────────────────────────────
-            dio_spi_pin("SDIO_D0"),  // Pin 12  alt: SPI_MISO
-            dio_spi_pin("SDIO_D3"),  // Pin 13  alt: SPI_CS
-            dio_spi_pin("SDIO_D1"),  // Pin 14  alt: SPI_INT
-            dio_pin("SDIO_D2"),      // Pin 15  (unused in SPI mode)
-            dio_spi_pin("SDIO_CMD"), // Pin 16  alt: SPI_MOSI
-            dio_clk_pin("SDIO_CLK"), // Pin 17  alt: SPI_SCK
-            // ── Pins 18–19: GPIO5, GPIO4 ──────────────────────────────
-            dio_pin("GPIO5"), // Pin 18  (pull-down, unused)
-            dio_pin("GPIO4"), // Pin 19  (pull-down, unused)
-            // ── Pins 20–22: GND, GPIO3, VDDIO ─────────────────────────
-            gnd_pin("GND_4"),                  // Pin 20
-            dio_pin("GPIO3"),                 // Pin 21  (pull-down, unused)
-            pwr_pin("VDDIO", 1.8, 3.6, 0.05), // Pin 22  3.3 V I/O supply
-            // ── Pins 23–26: GND, VBAT_TX, VDD_USB, GND ───────────────
-            gnd_pin("GND_5"),                   // Pin 23
-            pwr_pin("VBAT_TX", 3.0, 3.6, 0.5), // Pin 24  3.3 V PA supply
-            pwr_pin("VDD_USB", 3.0, 3.6, 0.1), // Pin 25  USB supply (GND when unused)
-            gnd_pin("GND_6"),                   // Pin 26
-            // ── Pins 27–28: USB (floating in SPI mode) ───────────────
-            dio_pin("USB_D_N"), // Pin 27  USB DM
-            dio_pin("USB_D_P"), // Pin 28  USB DP
-            // ── Pin 29: BUSY ──────────────────────────────────────────
-            dio_pin("BUSY"), // Pin 29  BUSY signal output
-            // ── Pins 30–38: GND, GPIOs, GND ───────────────────────────
-            gnd_pin("GND_7"),   // Pin 30
-            dio_pin("GPIO1"),  // Pin 31  (pull-down, unused)
-            dio_pin("GPIO0"),  // Pin 32  (pull-down, unused)
-            dio_pin("GPIO6"),  // Pin 33  (pull-down, unused)
-            dio_pin("GPIO7"),  // Pin 34  (pull-down, unused)
-            dio_pin("GPIO8"),  // Pin 35  (pull-down, unused)
-            dio_pin("GPIO9"),  // Pin 36  (pull-down, unused)
-            dio_pin("GPIO10"), // Pin 37  (pull-down, unused)
-            gnd_pin("GND_8"),   // Pin 38
+        let pins = [
+            Pin::build("GND_1").gnd(),
+            Pin::build("ANT").role(Role::AnalogIn).rf_limits().pin(),
+            Pin::build("GND_2").gnd(),
+            Pin::build("RESET_N").dio(),
+            Pin::build("WAKE").dio(),
+            Pin::build("JTAG_TMS").dio(),
+            Pin::build("JTAG_TCK").dio(),
+            Pin::build("JTAG_TDO").dio(),
+            Pin::build("JTAG_TDI").dio(),
+            Pin::build("VBAT").pwr(3.0.volt(), 3.6.volt(), 0.3.amp()),
+            Pin::build("GND_3").gnd(),
+            Pin::build("SDIO_D0").spi(),
+            Pin::build("SDIO_D3").spi(),
+            Pin::build("SDIO_D1").spi(),
+            Pin::build("SDIO_D2").dio(),
+            Pin::build("SDIO_CMD").spi(),
+            Pin::build("SDIO_CLK").clk(),
+            Pin::build("GPIO5").dio(),
+            Pin::build("GPIO4").dio(),
+            Pin::build("GND_4").gnd(),
+            Pin::build("GPIO3").dio(),
+            Pin::build("VDDIO").pwr(1.8.volt(), 3.6.volt(), 0.05.amp()),
+            Pin::build("GND_5").gnd(),
+            Pin::build("VBAT_TX").pwr(3.0.volt(), 3.6.volt(), 0.5.amp()),
+            Pin::build("VDD_USB").pwr(3.0.volt(), 3.6.volt(), 0.1.amp()),
+            Pin::build("GND_6").gnd(),
+            Pin::build("USB_D_N").dio(),
+            Pin::build("USB_D_P").dio(),
+            Pin::build("BUSY").dio(),
+            Pin::build("GND_7").gnd(),
+            Pin::build("GPIO1").dio(),
+            Pin::build("GPIO0").dio(),
+            Pin::build("GPIO6").dio(),
+            Pin::build("GPIO7").dio(),
+            Pin::build("GPIO8").dio(),
+            Pin::build("GPIO9").dio(),
+            Pin::build("GPIO10").dio(),
+            Pin::build("GND_8").gnd(),
         ];
 
         Self { pins }
     }
 }
 
-/// Operating limits for digital I/O pins (VDDIO domain, 0–VDDIO).
-fn digital_limits() -> Limits {
-    Limits {
-        v_min: 0.0.volt(),
-        v_max: 3.6.volt(),
-        i_max: 0.02.amp(),
+impl Component for Mm8108Mf15457 {
+    fn pin(&self, id: PinId) -> Option<&Pin> {
+        self.pins.iter().find(|pin| pin.id() == id)
     }
-}
 
-fn dio_clk_pin(name: &str) -> Pin {
-    Pin::new(
-        name,
-        Role::DigitalIO,
-        digital_limits(),
-        Some(SigSpec::spi_clk(50.0)),
-    )
-}
+    fn pin_name(&self, name: &str) -> Option<&Pin> {
+        self.pins.iter().find(|pin| pin.name() == name)
+    }
 
-fn dio_pin(name: &str) -> Pin {
-    Pin::new(name, Role::DigitalIO, digital_limits(), None)
-}
-
-fn dio_spi_pin(name: &str) -> Pin {
-    Pin::new(
-        name,
-        Role::DigitalIO,
-        digital_limits(),
-        Some(SigSpec::spi(50.0)),
-    )
-}
-
-fn gnd_pin(name: &str) -> Pin {
-    Pin::new(
-        name,
-        Role::Gnd,
-        Limits {
-            v_min: 0.0.volt(),
-            v_max: 0.0.volt(),
-            i_max: 100.0.amp(),
-        },
-        None,
-    )
-}
-
-fn pwr_pin(name: &str, v_min: f64, v_max: f64, i_max: f64) -> Pin {
-    Pin::new(
-        name,
-        Role::PowerIn,
-        Limits {
-            v_min: v_min.volt(),
-            v_max: v_max.volt(),
-            i_max: i_max.amp(),
-        },
-        None,
-    )
-}
-
-/// Limits for the analogue / RF antenna pin.
-fn rf_limits() -> Limits {
-    Limits {
-        v_min: 0.0.volt(),
-        v_max: 1.2.volt(),
-        i_max: 1.0.amp(),
+    fn pins(&self) -> &[Pin] {
+        &self.pins
     }
 }

@@ -1,20 +1,22 @@
-//! MM8108-MF15457 Wi-Fi HaLow — SPI reference design in copperleaf.
-//!
-//! This binary builds the complete SPI reference design from the
-//! MM8108-MF15457 datasheet using the `copperleaf` EDA library,
-//! then runs ERC and decoupling synthesis.
+//! MM8108-MF15457-based portable Wi-Fi HaLow station
 
-use reference_design::{build_spi_reference_design, run_analysis};
+use copperleaf_model::Board;
+
+use crate::parts::{mm8108_mf15457::Mm8108Mf15457, rp2354a::Rp2354a};
 
 mod parts;
-mod reference_design;
 
-fn main() {
-    let design = build_spi_reference_design();
+fn main() -> Result<(), ()> {
+    let board = board()?;
+    // run_analysis(&board);
 
-    let json = serde_json::to_string_pretty(&design).expect("serialize design to JSON");
-    std::fs::write("halow-sta.json", json).expect("write halow-sta.json");
-    println!("Wrote halow-sta.json");
+    Ok(())
+}
 
-    run_analysis(&design);
+fn board() -> Result<Board, ()> {
+    let mut board = Board::new();
+    board.add("rpi", Rp2354a::new());
+    board.add("radio", Mm8108Mf15457::new());
+    board.connect("rpi.IOVDD", "radio.VBAT")?;
+    Ok(board)
 }
