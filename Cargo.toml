@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+anyhow = "1.0"
+copperleaf-backend-kicad = {
+  path = "../../copperleaf/new/crates/backend-kicad"
+}
 copperleaf-model = { path = "../../copperleaf/new/crates/model" }
 copperleaf-parts = { path = "../../copperleaf/new/crates/parts" }
-copperleaf-backend-kicad = { path = "../../copperleaf/new/crates/backend-kicad" }
