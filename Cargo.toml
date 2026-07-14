@@ -5,8 +5,12 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0"
+copperleaf-analysis = { path = "../../copperleaf/new/crates/analysis" }
 copperleaf-backend-kicad = {
   path = "../../copperleaf/new/crates/backend-kicad"
 }
 copperleaf-model = { path = "../../copperleaf/new/crates/model" }
-copperleaf-parts = { path = "../../copperleaf/new/crates/parts" }
+copperleaf-parts-morsemicro = { path = "../../copperleaf/new/parts/morsemicro" }
+copperleaf-parts-raspberrypi = {
+  path = "../../copperleaf/new/parts/raspberrypi"
+}

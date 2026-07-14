@@ -1,16 +1,11 @@
-//! MM8108-MF15457-based portable Wi-Fi HaLow station
-//!
-//! This prototype intentionally leaves the power net without an explicit voltage
-//! override so that `Board::compile()` returns a `CompileError` demonstrating the
-//! new diagnostic pipeline.
+//! Portable Wi-Fi HaLow station
 
 use anyhow::{Context, Result};
+use copperleaf_analysis::analyse;
 use copperleaf_backend_kicad::KiCad;
 use copperleaf_model::{Backend, Board};
-
-use crate::parts::{mm8108_mf15457::Mm8108Mf15457, rp2354a::Rp2354a};
-
-mod parts;
+use copperleaf_parts_morsemicro::Mm8108Mf15457;
+use copperleaf_parts_raspberrypi::Rp2354a;
 
 fn main() -> Result<()> {
     let backend = KiCad::new().with_project_name("halow-sta");
@@ -23,9 +18,11 @@ fn main() -> Result<()> {
     // power net formed by IOVDD+VBAT has no voltage source.
     board.connect(rpi.pin(Rp2354a::IOVDD), radio.pin(Mm8108Mf15457::VBAT))?;
 
-    let report = board
+    let compiled = board
         .compile()
-        .context("board compilation failed — check diagnostics above")?;
+        .context("board compilation failed — check diagnostics")?;
+
+    let report = analyse(compiled)?;
 
     println!(
         "Compiled {} nets, {} pins, {} components",
@@ -37,7 +34,7 @@ fn main() -> Result<()> {
         println!("warning: {:?} - {}", warning.severity, warning.message);
     }
 
-    backend.emit("path/to/kicad/proj/", &report.board)?;
+    backend.emit("kicad/", &report.board)?;
 
     Ok(())
 }
