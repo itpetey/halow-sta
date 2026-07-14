@@ -15,27 +15,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
-name = "copperleaf-analysis"
+name = "copperleaf"
 version = "0.1.0"
 dependencies = [
- "copperleaf-model",
+ "thiserror",
+ "uom",
 ]
 
 [[package]]
 name = "copperleaf-backend-kicad"
 version = "0.1.0"
 dependencies = [
- "copperleaf-model",
+ "copperleaf",
  "serde_json",
  "thiserror",
-]
-
-[[package]]
-name = "copperleaf-model"
-version = "0.1.0"
-dependencies = [
- "thiserror",
- "uom",
 ]
 
 [[package]]
@@ -61,7 +54,7 @@ dependencies = [
 name = "copperleaf-parts-morsemicro"
 version = "0.1.0"
 dependencies = [
- "copperleaf-model",
+ "copperleaf",
  "copperleaf-part-macro",
 ]
 
@@ -69,7 +62,15 @@ dependencies = [
 name = "copperleaf-parts-raspberrypi"
 version = "0.1.0"
 dependencies = [
- "copperleaf-model",
+ "copperleaf",
+ "copperleaf-part-macro",
+]
+
+[[package]]
+name = "copperleaf-parts-wiznet"
+version = "0.1.0"
+dependencies = [
+ "copperleaf",
  "copperleaf-part-macro",
 ]
 
@@ -78,11 +79,11 @@ name = "halow-proto"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "copperleaf-analysis",
+ "copperleaf",
  "copperleaf-backend-kicad",
- "copperleaf-model",
  "copperleaf-parts-morsemicro",
  "copperleaf-parts-raspberrypi",
+ "copperleaf-parts-wiznet",
 ]
 
 [[package]]
