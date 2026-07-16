@@ -302,6 +302,39 @@ pub fn create() -> Result<Board> {
     Ok(board)
 }
 
+/// Connect a list of pins into a single net and return a handle to it.
+fn join(board: &mut Board, pins: &[PinHandle]) -> Result<NetHandle> {
+    ensure!(pins.len() >= 2, "need at least two pins to form a net");
+    let first = board.connect(pins[0], pins[1])?;
+    for window in pins.windows(3) {
+        board.connect(window[1], window[2])?;
+    }
+    Ok(first)
+}
+
+/// Add a pull-down resistor from `pin` to the given ground pin.
+fn pulldown(board: &mut Board, refdes: &str, pin: PinHandle, gnd: PinHandle) -> Result<()> {
+    let r = board.add(refdes, Resistor::new(10.0.kohm()));
+    board.connect(pin, r.pin(Resistor::PIN1))?;
+    board.connect(gnd, r.pin(Resistor::PIN2))?;
+    Ok(())
+}
+
+/// Add a pull-up resistor from `pin` to the `vdd_pin` power pin.
+fn pullup(board: &mut Board, refdes: &str, pin: PinHandle, vdd_pin: PinHandle) -> Result<()> {
+    let r = board.add(refdes, Resistor::new(10.0.kohm()));
+    board.connect(pin, r.pin(Resistor::PIN1))?;
+    board.connect(vdd_pin, r.pin(Resistor::PIN2))?;
+    Ok(())
+}
+
+/// Create a power net from a single power pin by self-connecting it.
+fn pwr_net(board: &mut Board, pin: PinHandle) -> Result<NetHandle> {
+    board
+        .connect(pin, pin)
+        .context("failed to create single-pin power net")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -414,37 +447,4 @@ mod tests {
             "decoupling capacitors should be auto-placed"
         );
     }
-}
-
-/// Connect a list of pins into a single net and return a handle to it.
-fn join(board: &mut Board, pins: &[PinHandle]) -> Result<NetHandle> {
-    ensure!(pins.len() >= 2, "need at least two pins to form a net");
-    let first = board.connect(pins[0], pins[1])?;
-    for window in pins.windows(3) {
-        board.connect(window[1], window[2])?;
-    }
-    Ok(first)
-}
-
-/// Create a power net from a single power pin by self-connecting it.
-fn pwr_net(board: &mut Board, pin: PinHandle) -> Result<NetHandle> {
-    board
-        .connect(pin, pin)
-        .context("failed to create single-pin power net")
-}
-
-/// Add a pull-up resistor from `pin` to the `vdd_pin` power pin.
-fn pullup(board: &mut Board, refdes: &str, pin: PinHandle, vdd_pin: PinHandle) -> Result<()> {
-    let r = board.add(refdes, Resistor::new(10.0.kohm()));
-    board.connect(pin, r.pin(Resistor::PIN1))?;
-    board.connect(vdd_pin, r.pin(Resistor::PIN2))?;
-    Ok(())
-}
-
-/// Add a pull-down resistor from `pin` to the given ground pin.
-fn pulldown(board: &mut Board, refdes: &str, pin: PinHandle, gnd: PinHandle) -> Result<()> {
-    let r = board.add(refdes, Resistor::new(10.0.kohm()));
-    board.connect(pin, r.pin(Resistor::PIN1))?;
-    board.connect(gnd, r.pin(Resistor::PIN2))?;
-    Ok(())
 }
