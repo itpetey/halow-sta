@@ -1,15 +1,27 @@
 //! Portable Wi-Fi HaLow station
 
 use anyhow::{Context, Result};
+use clap::Parser;
 use copperleaf::Backend;
 use copperleaf_backend_kicad::KiCad;
 
-mod board;
+mod ethernet_board;
+mod minimal_board;
+
+#[derive(Parser)]
+enum BoardArg {
+    Minimal,
+    Ethernet,
+}
 
 fn main() -> Result<()> {
     let backend = KiCad::new().with_project_name("halow-sta");
-
-    let report = board::create()?
+    let arg = BoardArg::parse();
+    let board = match arg {
+        BoardArg::Ethernet => ethernet_board::create(),
+        BoardArg::Minimal => minimal_board::create(),
+    };
+    let report = board?
         .compile()
         .context("board compilation failed — check diagnostics")?;
 

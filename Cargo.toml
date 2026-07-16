@@ -5,13 +5,19 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0"
+clap = { version = "4.6", features = ["derive", "help"] }
 copperleaf = { path = "../../copperleaf/new/crates/core" }
 copperleaf-backend-kicad = {
   path = "../../copperleaf/new/crates/backend-kicad"
 }
+copperleaf-parts-connectors = { path = "../../copperleaf/new/parts/connectors" }
+copperleaf-parts-microchip = { path = "../../copperleaf/new/parts/microchip" }
 copperleaf-parts-morsemicro = { path = "../../copperleaf/new/parts/morsemicro" }
+copperleaf-parts-passives = { path = "../../copperleaf/new/parts/passives" }
 copperleaf-parts-raspberrypi = {
   path = "../../copperleaf/new/parts/raspberrypi"
 }
+copperleaf-parts-texas-instruments = {
+  path = "../../copperleaf/new/parts/texas-instruments"
+}
 copperleaf-parts-wiznet = { path = "../../copperleaf/new/parts/wiznet" }
-copperleaf-parts-passives = { path = "../../copperleaf/new/parts/passives" }

@@ -62,27 +62,27 @@ pub fn create() -> Result<Board> {
 
     // ═══ SPI0: HaLow module ↔ RP2354A (50 MHz) ══════════════════════
     let sdio_clk = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CLK), rpi.pin(Rp2354a::GPIO2))
+        .connect(radio.pin(Mm8108Mf15457::SDIO_CLK_SPI_SCK), rpi.pin(Rp2354a::GPIO2))
         .context("SDIO_CLK")?;
     board.set_net_name(sdio_clk, "SDIO_CLK");
 
     let sdio_cmd = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CMD), rpi.pin(Rp2354a::GPIO3))
+        .connect(radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI), rpi.pin(Rp2354a::GPIO3))
         .context("SDIO_CMD")?;
     board.set_net_name(sdio_cmd, "SDIO_CMD");
 
     let sdio_d0 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D0), rpi.pin(Rp2354a::GPIO0))
+        .connect(radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO), rpi.pin(Rp2354a::GPIO0))
         .context("SDIO_D0")?;
     board.set_net_name(sdio_d0, "SDIO_D0");
 
     let sdio_d3 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D3), rpi.pin(Rp2354a::GPIO1))
+        .connect(radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS), rpi.pin(Rp2354a::GPIO1))
         .context("SDIO_D3")?;
     board.set_net_name(sdio_d3, "SDIO_D3");
 
     let sdio_d1 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D1), rpi.pin(Rp2354a::GPIO4))
+        .connect(radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT), rpi.pin(Rp2354a::GPIO4))
         .context("SDIO_D1")?;
     board.set_net_name(sdio_d1, "SDIO_D1");
 
@@ -91,25 +91,25 @@ pub fn create() -> Result<Board> {
     pullup(
         &mut board,
         "R1",
-        radio.pin(Mm8108Mf15457::SDIO_D3),
+        radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS),
         vdd_io_pin,
     )?;
     pullup(
         &mut board,
         "R2",
-        radio.pin(Mm8108Mf15457::SDIO_CMD),
+        radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI),
         vdd_io_pin,
     )?;
     pullup(
         &mut board,
         "R3",
-        radio.pin(Mm8108Mf15457::SDIO_D0),
+        radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO),
         vdd_io_pin,
     )?;
     pullup(
         &mut board,
         "R4",
-        radio.pin(Mm8108Mf15457::SDIO_D1),
+        radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT),
         vdd_io_pin,
     )?;
 
