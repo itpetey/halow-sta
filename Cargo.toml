@@ -14,3 +14,4 @@ copperleaf-parts-raspberrypi = {
   path = "../../copperleaf/new/parts/raspberrypi"
 }
 copperleaf-parts-wiznet = { path = "../../copperleaf/new/parts/wiznet" }
+copperleaf-parts-passives = { path = "../../copperleaf/new/parts/passives" }
