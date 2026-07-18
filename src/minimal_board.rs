@@ -6,25 +6,28 @@
 //! - **U5**: TPS63031DSKR buck-boost converter (3.3 V output)
 //!
 //! Power is supplied by a single-cell LiPo battery (J2) with USB-C charging
-//! (J1).  A 5.1 kΩ resistor on each CC pin requests the default 5 V USB
-//! profile.  The MCP73831 charges the battery while the TPS63031 buck-boost
+//! (J1). A 5.1 kΩ resistor on each CC pin requests the default 5 V USB
+//! profile. The MCP73831 charges the battery while the TPS63031 buck-boost
 //! maintains a stable 3.3 V rail across the full LiPo discharge curve
 //! (3.0–4.2 V).
 //!
 //! Decoupling capacitors are synthesised automatically from the decoupling
 //! constraints declared on each part definition.
 
-use anyhow::{Context, Result, ensure};
-use copperleaf::{Board, NetHandle, PinHandle, PinRef, UnitExt};
-use copperleaf_parts_connectors::{JstPh, UsbC23409011};
+use anyhow::{Context, Result};
+use copperleaf::{
+    Board, PinRef, UnitExt,
+    helpers::{join, pwr_net},
+};
+use copperleaf_parts_connectors::{Conmhf4SmdGT, JstPh, UsbC23409011};
 use copperleaf_parts_microchip::Mcp73831t2atiOt;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
-use copperleaf_parts_passives::{Inductor, Resistor};
+use copperleaf_parts_passives::{Inductor, Resistor, pulldown, pullup};
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_texas_instruments::Tps63031dskr;
 
 pub fn create() -> Result<Board> {
-    let mut board = Board::new();
+    let mut board = Board::new("halow-sta-low-min");
 
     let rpi = board.add("U2", Rp2354a::new());
     let radio = board.add("U1", Mm8108Mf15457::new());
@@ -34,6 +37,7 @@ pub fn create() -> Result<Board> {
     let charger = board.add("U4", Mcp73831t2atiOt::new());
     let reg = board.add("U5", Tps63031dskr::new());
     let batt = board.add("J2", JstPh::new(2));
+    let ant = board.add("J3", Conmhf4SmdGT::new());
 
     // ═══ Ground net ═════════════════════════════════════════════════
     let gnd = join(
@@ -58,34 +62,35 @@ pub fn create() -> Result<Board> {
     // ═══ USB 5 V rail (VBUS) ════════════════════════════════════════
     let vbus = join(
         &mut board,
-        &[
-            usb.pin(UsbC23409011::VBUS_A),
-            usb.pin(UsbC23409011::VBUS_B),
-        ],
+        &[usb.pin(UsbC23409011::VBUS_A), usb.pin(UsbC23409011::VBUS_B)],
     )?;
     board.set_net_voltage(vbus, 5.0.volt());
     board.set_net_name(vbus, "VBUS");
 
     // CC pull-downs: 5.1 kΩ to GND requests the default 5 V profile.
     let gnd_pin = rpi.pin(Rp2354a::VREG_PGND);
-    {
-        let r_cc1 = board.add("R_CC1", Resistor::new(5.1.kohm()));
-        board.connect(usb.pin(UsbC23409011::CC1), r_cc1.pin(Resistor::PIN1))?;
-        board.connect(gnd_pin, r_cc1.pin(Resistor::PIN2))?;
-    }
-    {
-        let r_cc2 = board.add("R_CC2", Resistor::new(5.1.kohm()));
-        board.connect(usb.pin(UsbC23409011::CC2), r_cc2.pin(Resistor::PIN1))?;
-        board.connect(gnd_pin, r_cc2.pin(Resistor::PIN2))?;
-    }
+
+    let r_cc1 = board.add("R_CC1", Resistor::new(5.1.kohm()));
+    board.connect(usb.pin(UsbC23409011::CC1), r_cc1.pin(Resistor::PIN1))?;
+    board.connect(gnd_pin, r_cc1.pin(Resistor::PIN2))?;
+
+    let r_cc2 = board.add("R_CC2", Resistor::new(5.1.kohm()));
+    board.connect(usb.pin(UsbC23409011::CC2), r_cc2.pin(Resistor::PIN1))?;
+    board.connect(gnd_pin, r_cc2.pin(Resistor::PIN2))?;
 
     // ═══ Charger (MCP73831) ═════════════════════════════════════════
     // VDD ← VBUS
-    board.connect(usb.pin(UsbC23409011::VBUS_A), charger.pin(Mcp73831t2atiOt::VDD))?;
+    board.connect(
+        usb.pin(UsbC23409011::VBUS_A),
+        charger.pin(Mcp73831t2atiOt::VDD),
+    )?;
 
     // PROG → R_PROG (2 kΩ ≈ 500 mA charge current) → GND
     let r_prog = board.add("R_PROG", Resistor::new(2.0.kohm()));
-    board.connect(charger.pin(Mcp73831t2atiOt::PROG), r_prog.pin(Resistor::PIN1))?;
+    board.connect(
+        charger.pin(Mcp73831t2atiOt::PROG),
+        r_prog.pin(Resistor::PIN1),
+    )?;
     board.connect(gnd_pin, r_prog.pin(Resistor::PIN2))?;
 
     // STAT (open-drain) → LED + current limiting resistor → GND.
@@ -116,10 +121,7 @@ pub fn create() -> Result<Board> {
     board.connect(reg.pin(Tps63031dskr::FB), reg.pin(Tps63031dskr::GND))?;
 
     // Power-save / SYNC: tie LOW for automatic PFM/PWM switching.
-    board.connect(
-        reg.pin(Tps63031dskr::PS_SYNC),
-        reg.pin(Tps63031dskr::GND),
-    )?;
+    board.connect(reg.pin(Tps63031dskr::PS_SYNC), reg.pin(Tps63031dskr::GND))?;
 
     // VINA (control-stage supply): tie to VIN.
     board.connect(reg.pin(Tps63031dskr::VINA), reg.pin(Tps63031dskr::VIN))?;
@@ -130,10 +132,7 @@ pub fn create() -> Result<Board> {
     board.connect(reg.pin(Tps63031dskr::L2), l_pwr.pin(Inductor::PIN2))?;
 
     // Exposed thermal pad to GND.
-    board.connect(
-        reg.pin(Tps63031dskr::EXP),
-        rpi.pin(Rp2354a::VREG_PGND),
-    )?;
+    board.connect(reg.pin(Tps63031dskr::EXP), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ 3.3 V rail (V3V3) — regulated output ═══════════════════════
     let v3v3 = pwr_net(&mut board, reg.pin(Tps63031dskr::VOUT))?;
@@ -141,46 +140,75 @@ pub fn create() -> Result<Board> {
     board.set_net_name(v3v3, "V3V3");
 
     // Wire all 3.3 V consumers.
-    board.connect(
-        reg.pin(Tps63031dskr::VOUT),
-        rpi.pin(Rp2354a::IOVDD),
-    )?;
-    board.connect(
-        reg.pin(Tps63031dskr::VOUT),
-        radio.pin(Mm8108Mf15457::VDDIO),
-    )?;
-    board.connect(
-        reg.pin(Tps63031dskr::VOUT),
-        radio.pin(Mm8108Mf15457::VBAT),
-    )?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VDDIO))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VBAT))?;
     board.connect(
         reg.pin(Tps63031dskr::VOUT),
         radio.pin(Mm8108Mf15457::VBAT_TX),
     )?;
 
+    // ═══ RP2354A internal voltage regulator (1.1 V core) ═══════════════
+    // VREG_VIN ← BAT (already connected above).
+    // Inductor from VREG_LX to VREG_AVDD (2.2 µH typ.).
+    let l_vreg = board.add("L_VREG", Inductor::new(2.2e-6.henry()));
+    let vreg_lx = board.connect(rpi.pin(Rp2354a::VREG_LX), l_vreg.pin(Inductor::PIN1))?;
+    board.set_net_voltage(vreg_lx, 1.1.volt());
+    board.set_net_name(vreg_lx, "VREG_SW");
+
+    let vreg_avdd = board.connect(rpi.pin(Rp2354a::VREG_AVDD), l_vreg.pin(Inductor::PIN2))?;
+    board.set_net_voltage(vreg_avdd, 1.1.volt());
+    board.set_net_name(vreg_avdd, "VREG_1V1");
+
+    // VREG_FB → VREG_1V1 (fixed-output configuration).
+    board.connect(rpi.pin(Rp2354a::VREG_FB), rpi.pin(Rp2354a::VREG_AVDD))?;
+
+    // Core supply: DVDD ← VREG_1V1.
+    board.connect(rpi.pin(Rp2354a::DVDD), rpi.pin(Rp2354a::VREG_AVDD))?;
+
+    // Remaining supply pins ← V3V3.
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::ADC_AVDD))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::USB_OTP_VDD))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::QSPI_IOVDD))?;
+
     // ═══ SPI0: HaLow module ↔ RP2354A (50 MHz) ══════════════════════
     let sdio_clk = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CLK_SPI_SCK), rpi.pin(Rp2354a::GPIO2))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_CLK_SPI_SCK),
+            rpi.pin(Rp2354a::GPIO2),
+        )
         .context("SDIO_CLK")?;
     board.set_net_name(sdio_clk, "SDIO_CLK");
 
     let sdio_cmd = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI), rpi.pin(Rp2354a::GPIO3))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI),
+            rpi.pin(Rp2354a::GPIO3),
+        )
         .context("SDIO_CMD")?;
     board.set_net_name(sdio_cmd, "SDIO_CMD");
 
     let sdio_d0 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO), rpi.pin(Rp2354a::GPIO0))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO),
+            rpi.pin(Rp2354a::GPIO0),
+        )
         .context("SDIO_D0")?;
     board.set_net_name(sdio_d0, "SDIO_D0");
 
     let sdio_d3 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS), rpi.pin(Rp2354a::GPIO1))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS),
+            rpi.pin(Rp2354a::GPIO1),
+        )
         .context("SDIO_D3")?;
     board.set_net_name(sdio_d3, "SDIO_D3");
 
     let sdio_d1 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT), rpi.pin(Rp2354a::GPIO4))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT),
+            rpi.pin(Rp2354a::GPIO4),
+        )
         .context("SDIO_D1")?;
     board.set_net_name(sdio_d1, "SDIO_D1");
 
@@ -226,6 +254,17 @@ pub fn create() -> Result<Board> {
         .connect(radio.pin(Mm8108Mf15457::BUSY), rpi.pin(Rp2354a::GPIO7))
         .context("MM_BUSY")?;
     board.set_net_name(mm_busy, "MM_BUSY");
+
+    // ═══ MHF4 antenna connector ═══════════════════════════════════════
+    let rf = board
+        .connect(radio.pin(Mm8108Mf15457::ANT), ant.pin(Conmhf4SmdGT::Signal))
+        .context("ANT")?;
+    board.set_net_name(rf, "RF");
+
+    // MHF4 ground pads to GND.
+    board.connect(ant.pin(Conmhf4SmdGT::GND1), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(ant.pin(Conmhf4SmdGT::GND2), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(ant.pin(Conmhf4SmdGT::GND3), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ HaLow USB pins tied to GND in SPI mode ═════════════════════
     board.connect(
@@ -301,40 +340,56 @@ pub fn create() -> Result<Board> {
         board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
     }
 
-    Ok(board)
-}
-
-/// Connect a list of pins into a single net and return a handle to it.
-fn join(board: &mut Board, pins: &[PinHandle]) -> Result<NetHandle> {
-    ensure!(pins.len() >= 2, "need at least two pins to form a net");
-    let first = board.connect(pins[0], pins[1])?;
-    for window in pins.windows(3) {
-        board.connect(window[1], window[2])?;
+    // ═══ RP2354A unused I/O — tie to GND ═════════════════════════════
+    // GPIO8-13 (used by Ethernet variant, free here).
+    for &pin in &[
+        Rp2354a::GPIO8,
+        Rp2354a::GPIO9,
+        Rp2354a::GPIO10,
+        Rp2354a::GPIO11,
+        Rp2354a::GPIO12,
+        Rp2354a::GPIO13,
+    ] {
+        board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
     }
-    Ok(first)
-}
 
-/// Add a pull-down resistor from `pin` to the given ground pin.
-fn pulldown(board: &mut Board, refdes: &str, pin: PinHandle, gnd: PinHandle) -> Result<()> {
-    let r = board.add(refdes, Resistor::new(10.0.kohm()));
-    board.connect(pin, r.pin(Resistor::PIN1))?;
-    board.connect(gnd, r.pin(Resistor::PIN2))?;
-    Ok(())
-}
+    // QSPI pins (no external flash — RP2354A has internal).
+    for &pin in &[
+        Rp2354a::QSPI_SD0,
+        Rp2354a::QSPI_SD1,
+        Rp2354a::QSPI_SD2,
+        Rp2354a::QSPI_SD3,
+        Rp2354a::QSPI_SS,
+    ] {
+        board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
+    }
 
-/// Add a pull-up resistor from `pin` to the `vdd_pin` power pin.
-fn pullup(board: &mut Board, refdes: &str, pin: PinHandle, vdd_pin: PinHandle) -> Result<()> {
-    let r = board.add(refdes, Resistor::new(10.0.kohm()));
-    board.connect(pin, r.pin(Resistor::PIN1))?;
-    board.connect(vdd_pin, r.pin(Resistor::PIN2))?;
-    Ok(())
-}
+    // USB pins — route channel 1 to the MCU.
+    board.connect(rpi.pin(Rp2354a::USB_DM), usb.pin(UsbC23409011::DN1))?;
+    board.connect(rpi.pin(Rp2354a::USB_DP), usb.pin(UsbC23409011::DP1))?;
 
-/// Create a power net from a single power pin by self-connecting it.
-fn pwr_net(board: &mut Board, pin: PinHandle) -> Result<NetHandle> {
-    board
-        .connect(pin, pin)
-        .context("failed to create single-pin power net")
+    // Unused connector pins — tie to GND.
+    board.connect(usb.pin(UsbC23409011::DP2), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::DN2), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::SBU1), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::SBU2), rpi.pin(Rp2354a::VREG_PGND))?;
+
+    // ═══ RP2354A control pins ══════════════════════════════════════════
+    // RUN: 10 kΩ pull-up to V3V3 for normal operation.
+    pullup(&mut board, "R_RUN", rpi.pin(Rp2354a::RUN), v3v3_pin)?;
+
+    // SWDIO: 10 kΩ pull-up to V3V3 for debug interface.
+    pullup(&mut board, "R_SWD", rpi.pin(Rp2354a::SWDIO), v3v3_pin)?;
+
+    // STAT: pull-up to VBUS (open-drain, active-low — ignored when not used).
+    pullup(
+        &mut board,
+        "R_STAT",
+        charger.pin(Mcp73831t2atiOt::STAT),
+        usb.pin(UsbC23409011::VBUS_A),
+    )?;
+
+    Ok(board)
 }
 
 #[cfg(test)]

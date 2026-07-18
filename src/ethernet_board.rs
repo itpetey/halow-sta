@@ -12,17 +12,19 @@
 
 use anyhow::{Context, Result, ensure};
 use copperleaf::{Board, NetHandle, PinHandle, PinRef, UnitExt};
+use copperleaf_parts_connectors::Conmhf4SmdGT;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
-use copperleaf_parts_passives::{Capacitor, Crystal, Resistor};
+use copperleaf_parts_passives::{Capacitor, Crystal, Inductor, Resistor};
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_wiznet::W5500;
 
 pub fn create() -> Result<Board> {
-    let mut board = Board::new();
+    let mut board = Board::new("halow-sta-low-eth");
 
     let rpi = board.add("U2", Rp2354a::new());
     let radio = board.add("U1", Mm8108Mf15457::new());
     let eth = board.add("U3", W5500::new());
+    let ant = board.add("J3", Conmhf4SmdGT::new());
 
     // ═══ Ground net ═════════════════════════════════════════════════
     let gnd = join(
@@ -60,29 +62,69 @@ pub fn create() -> Result<Board> {
     board.set_net_voltage(avdd, 3.3.volt());
     board.set_net_name(avdd, "AVDD");
 
+    // ═══ RP2354A internal voltage regulator (1.1 V core) ═══════════════
+    // VREG_VIN ← VDD_IO (3.3 V, external supply).
+    board.connect(rpi.pin(Rp2354a::VREG_VIN), rpi.pin(Rp2354a::IOVDD))?;
+
+    // Inductor from VREG_LX to VREG_AVDD (2.2 µH typ.).
+    let l_vreg = board.add("L_VREG", Inductor::new(2.2e-6.henry()));
+    let vreg_lx = board.connect(rpi.pin(Rp2354a::VREG_LX), l_vreg.pin(Inductor::PIN1))?;
+    board.set_net_voltage(vreg_lx, 1.1.volt());
+    board.set_net_name(vreg_lx, "VREG_SW");
+
+    let vreg_avdd = board.connect(rpi.pin(Rp2354a::VREG_AVDD), l_vreg.pin(Inductor::PIN2))?;
+    board.set_net_voltage(vreg_avdd, 1.1.volt());
+    board.set_net_name(vreg_avdd, "VREG_1V1");
+
+    // VREG_FB → VREG_1V1 (fixed-output configuration).
+    board.connect(rpi.pin(Rp2354a::VREG_FB), rpi.pin(Rp2354a::VREG_AVDD))?;
+
+    // Core supply: DVDD ← VREG_1V1.
+    board.connect(rpi.pin(Rp2354a::DVDD), rpi.pin(Rp2354a::VREG_AVDD))?;
+
+    // Remaining supply pins ← VDD_IO (3.3 V).
+    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::ADC_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::USB_OTP_VDD))?;
+    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::QSPI_IOVDD))?;
+
     // ═══ SPI0: HaLow module ↔ RP2354A (50 MHz) ══════════════════════
     let sdio_clk = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CLK_SPI_SCK), rpi.pin(Rp2354a::GPIO2))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_CLK_SPI_SCK),
+            rpi.pin(Rp2354a::GPIO2),
+        )
         .context("SDIO_CLK")?;
     board.set_net_name(sdio_clk, "SDIO_CLK");
 
     let sdio_cmd = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI), rpi.pin(Rp2354a::GPIO3))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI),
+            rpi.pin(Rp2354a::GPIO3),
+        )
         .context("SDIO_CMD")?;
     board.set_net_name(sdio_cmd, "SDIO_CMD");
 
     let sdio_d0 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO), rpi.pin(Rp2354a::GPIO0))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO),
+            rpi.pin(Rp2354a::GPIO0),
+        )
         .context("SDIO_D0")?;
     board.set_net_name(sdio_d0, "SDIO_D0");
 
     let sdio_d3 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS), rpi.pin(Rp2354a::GPIO1))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS),
+            rpi.pin(Rp2354a::GPIO1),
+        )
         .context("SDIO_D3")?;
     board.set_net_name(sdio_d3, "SDIO_D3");
 
     let sdio_d1 = board
-        .connect(radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT), rpi.pin(Rp2354a::GPIO4))
+        .connect(
+            radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT),
+            rpi.pin(Rp2354a::GPIO4),
+        )
         .context("SDIO_D1")?;
     board.set_net_name(sdio_d1, "SDIO_D1");
 
@@ -128,6 +170,17 @@ pub fn create() -> Result<Board> {
         .connect(radio.pin(Mm8108Mf15457::BUSY), rpi.pin(Rp2354a::GPIO7))
         .context("MM_BUSY")?;
     board.set_net_name(mm_busy, "MM_BUSY");
+
+    // ═══ MHF4 antenna connector ═══════════════════════════════════════
+    let rf = board
+        .connect(radio.pin(Mm8108Mf15457::ANT), ant.pin(Conmhf4SmdGT::Signal))
+        .context("ANT")?;
+    board.set_net_name(rf, "RF");
+
+    // MHF4 ground pads to GND.
+    board.connect(ant.pin(Conmhf4SmdGT::GND1), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(ant.pin(Conmhf4SmdGT::GND2), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(ant.pin(Conmhf4SmdGT::GND3), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ SPI1: W5500 ↔ RP2354A (33 MHz) ═════════════════════════════
     let w_sclk = board
@@ -298,6 +351,31 @@ pub fn create() -> Result<Board> {
     for &pin in free_gpio {
         board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
     }
+
+    // ═══ RP2354A unused I/O — tie to GND ═════════════════════════════
+    // QSPI pins (no external flash — RP2354A has internal).
+    for &pin in &[
+        Rp2354a::QSPI_SD0,
+        Rp2354a::QSPI_SD1,
+        Rp2354a::QSPI_SD2,
+        Rp2354a::QSPI_SD3,
+        Rp2354a::QSPI_SS,
+    ] {
+        board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
+    }
+
+    // USB pins unused in this design.
+    board.connect(rpi.pin(Rp2354a::USB_DM), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(rpi.pin(Rp2354a::USB_DP), rpi.pin(Rp2354a::VREG_PGND))?;
+
+    // ═══ RP2354A control pins ══════════════════════════════════════════
+    let vdd_io_pin = rpi.pin(Rp2354a::IOVDD);
+
+    // RUN: 10 kΩ pull-up to VDD_IO for normal operation.
+    pullup(&mut board, "R_RUN", rpi.pin(Rp2354a::RUN), vdd_io_pin)?;
+
+    // SWDIO: 10 kΩ pull-up to VDD_IO for debug interface.
+    pullup(&mut board, "R_SWD", rpi.pin(Rp2354a::SWDIO), vdd_io_pin)?;
 
     Ok(board)
 }

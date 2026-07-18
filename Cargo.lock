@@ -248,9 +248,9 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 
 [[package]]
 name = "mustache2"
-version = "1.0.4"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62bc60485924fa0f346efd5540771ec477eb7a10a08df7720a9e396abf284a24"
+checksum = "5df3cec045025fecc10a3134a7159aa0391a6c94e712aaee48ee473b29d476bf"
 dependencies = [
  "serde",
 ]
