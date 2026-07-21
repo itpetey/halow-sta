@@ -51,13 +51,17 @@ pub fn create() -> Result<Board> {
             reg.pin(Tps63031dskr::GND),
             reg.pin(Tps63031dskr::PGND),
             batt.pin(PinRef("2")),
+            batt.pin(S2bPhSm4TbLfSn::SHIELD_1),
+            batt.pin(S2bPhSm4TbLfSn::SHIELD_2),
         ],
     )?;
     board.set_net_name(gnd, "GND");
 
-    // Shield tie-downs (first of four — the part definition only
-    // exposes one SHIELD PinRef for duplicates).
-    board.connect(usb.pin(UsbC23409011::SHIELD), rpi.pin(Rp2354a::VREG_PGND))?;
+    // Shield tie-downs — all four USB-C shield pads to GND.
+    board.connect(usb.pin(UsbC23409011::SHIELD_1), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::SHIELD_2), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::SHIELD_3), rpi.pin(Rp2354a::VREG_PGND))?;
+    board.connect(usb.pin(UsbC23409011::SHIELD_4), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ USB 5 V rail (VBUS) ════════════════════════════════════════
     let vbus = join(
@@ -136,7 +140,12 @@ pub fn create() -> Result<Board> {
 
     // ═══ 3.3 V rail (V3V3) — regulated output ═══════════════════════
     // Wire all 3.3 V consumers.
-    let v3v3 = board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD))?;
+    let v3v3 = board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_1))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_2))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_3))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_4))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_5))?;
+    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_6))?;
     board.set_net_voltage(v3v3, 3.3.volt());
     board.set_net_name(v3v3, "V3V3");
     board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VDDIO))?;
@@ -168,7 +177,9 @@ pub fn create() -> Result<Board> {
     board.connect(rpi.pin(Rp2354a::VREG_FB), rpi.pin(Rp2354a::VREG_AVDD))?;
 
     // Core supply: DVDD ← VREG_1V1.
-    board.connect(rpi.pin(Rp2354a::DVDD), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_1), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_2), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_3), rpi.pin(Rp2354a::VREG_AVDD))?;
 
     // Remaining supply pins ← V3V3.
     board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::ADC_AVDD))?;

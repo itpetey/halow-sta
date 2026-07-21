@@ -44,7 +44,12 @@ pub fn create() -> Result<Board> {
     let vdd_io = join(
         &mut board,
         &[
-            rpi.pin(Rp2354a::IOVDD),
+            rpi.pin(Rp2354a::IOVDD_1),
+            rpi.pin(Rp2354a::IOVDD_2),
+            rpi.pin(Rp2354a::IOVDD_3),
+            rpi.pin(Rp2354a::IOVDD_4),
+            rpi.pin(Rp2354a::IOVDD_5),
+            rpi.pin(Rp2354a::IOVDD_6),
             eth.pin(W5500::VDD),
             radio.pin(Mm8108Mf15457::VDDIO),
         ],
@@ -62,7 +67,7 @@ pub fn create() -> Result<Board> {
 
     // ═══ RP2354A internal voltage regulator (1.1 V core) ═══════════════
     // VREG_VIN ← VDD_IO (3.3 V, external supply).
-    board.connect(rpi.pin(Rp2354a::VREG_VIN), rpi.pin(Rp2354a::IOVDD))?;
+    board.connect(rpi.pin(Rp2354a::VREG_VIN), rpi.pin(Rp2354a::IOVDD_1))?;
 
     // Inductor from VREG_LX to VREG_AVDD (2.2 µH typ.).
     let l_vreg = board.add("L_VREG", B82472p6222m000::new());
@@ -84,12 +89,14 @@ pub fn create() -> Result<Board> {
     board.connect(rpi.pin(Rp2354a::VREG_FB), rpi.pin(Rp2354a::VREG_AVDD))?;
 
     // Core supply: DVDD ← VREG_1V1.
-    board.connect(rpi.pin(Rp2354a::DVDD), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_1), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_2), rpi.pin(Rp2354a::VREG_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::DVDD_3), rpi.pin(Rp2354a::VREG_AVDD))?;
 
     // Remaining supply pins ← VDD_IO (3.3 V).
-    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::ADC_AVDD))?;
-    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::USB_OTP_VDD))?;
-    board.connect(rpi.pin(Rp2354a::IOVDD), rpi.pin(Rp2354a::QSPI_IOVDD))?;
+    board.connect(rpi.pin(Rp2354a::IOVDD_1), rpi.pin(Rp2354a::ADC_AVDD))?;
+    board.connect(rpi.pin(Rp2354a::IOVDD_1), rpi.pin(Rp2354a::USB_OTP_VDD))?;
+    board.connect(rpi.pin(Rp2354a::IOVDD_1), rpi.pin(Rp2354a::QSPI_IOVDD))?;
 
     // ═══ SPI0: HaLow module ↔ RP2354A (50 MHz) ══════════════════════
     let sdio_clk = board
@@ -133,7 +140,7 @@ pub fn create() -> Result<Board> {
     board.set_net_name(sdio_d1, "SDIO_D1");
 
     // SDIO bus pull-ups (10 kΩ → VDD_IO), excluding the clock line.
-    let vdd_io_pin = rpi.pin(Rp2354a::IOVDD);
+    let vdd_io_pin = rpi.pin(Rp2354a::IOVDD_1);
     pullup(
         &mut board,
         "R1",
@@ -449,7 +456,7 @@ pub fn create() -> Result<Board> {
     board.connect(rpi.pin(Rp2354a::USB_DP), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ RP2354A control pins ══════════════════════════════════════════
-    let vdd_io_pin = rpi.pin(Rp2354a::IOVDD);
+    let vdd_io_pin = rpi.pin(Rp2354a::IOVDD_1);
 
     // RUN: 10 kΩ pull-up to VDD_IO for normal operation.
     pullup(
