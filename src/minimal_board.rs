@@ -138,12 +138,10 @@ pub fn create() -> Result<Board> {
     board.connect(reg.pin(Tps63031dskr::EXP), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ 3.3 V rail (V3V3) — regulated output ═══════════════════════
-    let v3v3 = board.net(reg.pin(Tps63031dskr::VOUT))?;
+    // Wire all 3.3 V consumers.
+    let v3v3 = board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD))?;
     board.set_net_voltage(v3v3, 3.3.volt());
     board.set_net_name(v3v3, "V3V3");
-
-    // Wire all 3.3 V consumers.
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD))?;
     board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VDDIO))?;
     board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VBAT))?;
     board.connect(

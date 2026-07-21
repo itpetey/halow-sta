@@ -63,10 +63,6 @@ pub fn create() -> Result<Board> {
     board.set_net_voltage(vbat_tx, 3.3.volt());
     board.set_net_name(vbat_tx, "VBAT_TX");
 
-    let avdd = board.net(eth.pin(W5500::AVDD))?;
-    board.set_net_voltage(avdd, 3.3.volt());
-    board.set_net_name(avdd, "AVDD");
-
     // ═══ RP2354A internal voltage regulator (1.1 V core) ═══════════════
     // VREG_VIN ← VDD_IO (3.3 V, external supply).
     board.connect(rpi.pin(Rp2354a::VREG_VIN), rpi.pin(Rp2354a::IOVDD))?;
@@ -271,7 +267,9 @@ pub fn create() -> Result<Board> {
         .context("W5500_SPDLED")?;
     board.set_net_name(spd, "W5500_SPDLED");
     board.connect(eth.pin(W5500::PMODE0), r24.pin(Resistor::PIN1))?;
-    board.connect(eth.pin(W5500::AVDD), r24.pin(Resistor::PIN2))?;
+    let avdd = board.connect(eth.pin(W5500::AVDD), r24.pin(Resistor::PIN2))?;
+    board.set_net_voltage(avdd, 3.3.volt());
+    board.set_net_name(avdd, "AVDD");
 
     let r25 = board.add("R25", Resistor::new(10.0.kohm(), Package::M0603));
     let link = board
