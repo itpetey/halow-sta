@@ -6,6 +6,8 @@ use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
 use copperleaf::Backend;
 use copperleaf_backend_kicad::KiCad;
+use copperleaf_compile::CompileOptions;
+use copperleaf_parts_passives::footprint::Package;
 
 mod ethernet_board;
 mod minimal_board;
@@ -37,9 +39,13 @@ fn main() -> Result<()> {
 
     let backend = KiCad::new().with_project_name(board.name());
 
-    let report = board
-        .compile()
-        .context("board compilation failed — check diagnostics")?;
+    let report = copperleaf_compile::run(
+        board,
+        &CompileOptions {
+            decoupling_footprint: Package::M0603,
+        },
+    )
+    .context("board compilation failed — check diagnostics")?;
 
     println!(
         "Compiled {} nets, {} pins, {} components",

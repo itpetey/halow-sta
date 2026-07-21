@@ -10,6 +10,7 @@ copperleaf = { path = "../../copperleaf/new/crates/core" }
 copperleaf-backend-kicad = {
   path = "../../copperleaf/new/crates/backend-kicad"
 }
+copperleaf-compile = { path = "../../copperleaf/new/crates/compile" }
 copperleaf-parts-connectors = { path = "../../copperleaf/new/parts/connectors" }
 copperleaf-parts-microchip = { path = "../../copperleaf/new/parts/microchip" }
 copperleaf-parts-morsemicro = { path = "../../copperleaf/new/parts/morsemicro" }

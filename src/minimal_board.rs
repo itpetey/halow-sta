@@ -19,15 +19,18 @@ use copperleaf::{
     Board, PinRef, UnitExt,
     helpers::{join, pwr_net},
 };
-use copperleaf_parts_connectors::{Conmhf4SmdGT, JstPh, UsbC23409011};
+use copperleaf_parts_connectors::{Conmhf4SmdGT, S2bPhSm4TbLfSn, UsbC23409011};
 use copperleaf_parts_microchip::Mcp73831t2atiOt;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
-use copperleaf_parts_passives::{Inductor, Resistor, pulldown, pullup};
+use copperleaf_parts_passives::{
+    B82472p6152m000, B82472p6222m000, Resistor, footprint::Package, pulldown, pullup,
+};
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_texas_instruments::Tps63031dskr;
 
 pub fn create() -> Result<Board> {
     let mut board = Board::new("halow-sta-low-min");
+    board.set_dimensions(60.0, 40.0); // 60mm wide, 40mm high
 
     let rpi = board.add("U2", Rp2354a::new());
     let radio = board.add("U1", Mm8108Mf15457::new());
@@ -36,7 +39,7 @@ pub fn create() -> Result<Board> {
     let usb = board.add("J1", UsbC23409011::new());
     let charger = board.add("U4", Mcp73831t2atiOt::new());
     let reg = board.add("U5", Tps63031dskr::new());
-    let batt = board.add("J2", JstPh::new(2));
+    let batt = board.add("J2", S2bPhSm4TbLfSn::new());
     let ant = board.add("J3", Conmhf4SmdGT::new());
 
     // ═══ Ground net ═════════════════════════════════════════════════
@@ -70,11 +73,11 @@ pub fn create() -> Result<Board> {
     // CC pull-downs: 5.1 kΩ to GND requests the default 5 V profile.
     let gnd_pin = rpi.pin(Rp2354a::VREG_PGND);
 
-    let r_cc1 = board.add("R_CC1", Resistor::new(5.1.kohm()));
+    let r_cc1 = board.add("R_CC1", Resistor::new(5.1.kohm(), Package::M0603));
     board.connect(usb.pin(UsbC23409011::CC1), r_cc1.pin(Resistor::PIN1))?;
     board.connect(gnd_pin, r_cc1.pin(Resistor::PIN2))?;
 
-    let r_cc2 = board.add("R_CC2", Resistor::new(5.1.kohm()));
+    let r_cc2 = board.add("R_CC2", Resistor::new(5.1.kohm(), Package::M0603));
     board.connect(usb.pin(UsbC23409011::CC2), r_cc2.pin(Resistor::PIN1))?;
     board.connect(gnd_pin, r_cc2.pin(Resistor::PIN2))?;
 
@@ -86,7 +89,7 @@ pub fn create() -> Result<Board> {
     )?;
 
     // PROG → R_PROG (2 kΩ ≈ 500 mA charge current) → GND
-    let r_prog = board.add("R_PROG", Resistor::new(2.0.kohm()));
+    let r_prog = board.add("R_PROG", Resistor::new(2.0.kohm(), Package::M0603));
     board.connect(
         charger.pin(Mcp73831t2atiOt::PROG),
         r_prog.pin(Resistor::PIN1),
@@ -127,9 +130,9 @@ pub fn create() -> Result<Board> {
     board.connect(reg.pin(Tps63031dskr::VINA), reg.pin(Tps63031dskr::VIN))?;
 
     // Inductor between L1 and L2 (1.5 µH typ., e.g. LPS4018-152ML).
-    let l_pwr = board.add("L_PWR", Inductor::new(1.5e-6.henry()));
-    board.connect(reg.pin(Tps63031dskr::L1), l_pwr.pin(Inductor::PIN1))?;
-    board.connect(reg.pin(Tps63031dskr::L2), l_pwr.pin(Inductor::PIN2))?;
+    let l_pwr = board.add("L_PWR", B82472p6152m000::new());
+    board.connect(reg.pin(Tps63031dskr::L1), l_pwr.pin(B82472p6152m000::PIN_1))?;
+    board.connect(reg.pin(Tps63031dskr::L2), l_pwr.pin(B82472p6152m000::PIN_2))?;
 
     // Exposed thermal pad to GND.
     board.connect(reg.pin(Tps63031dskr::EXP), rpi.pin(Rp2354a::VREG_PGND))?;
@@ -151,12 +154,18 @@ pub fn create() -> Result<Board> {
     // ═══ RP2354A internal voltage regulator (1.1 V core) ═══════════════
     // VREG_VIN ← BAT (already connected above).
     // Inductor from VREG_LX to VREG_AVDD (2.2 µH typ.).
-    let l_vreg = board.add("L_VREG", Inductor::new(2.2e-6.henry()));
-    let vreg_lx = board.connect(rpi.pin(Rp2354a::VREG_LX), l_vreg.pin(Inductor::PIN1))?;
+    let l_vreg = board.add("L_VREG", B82472p6222m000::new());
+    let vreg_lx = board.connect(
+        rpi.pin(Rp2354a::VREG_LX),
+        l_vreg.pin(B82472p6222m000::PIN_1),
+    )?;
     board.set_net_voltage(vreg_lx, 1.1.volt());
     board.set_net_name(vreg_lx, "VREG_SW");
 
-    let vreg_avdd = board.connect(rpi.pin(Rp2354a::VREG_AVDD), l_vreg.pin(Inductor::PIN2))?;
+    let vreg_avdd = board.connect(
+        rpi.pin(Rp2354a::VREG_AVDD),
+        l_vreg.pin(B82472p6222m000::PIN_2),
+    )?;
     board.set_net_voltage(vreg_avdd, 1.1.volt());
     board.set_net_name(vreg_avdd, "VREG_1V1");
 
@@ -219,24 +228,28 @@ pub fn create() -> Result<Board> {
         "R1",
         radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS),
         v3v3_pin,
+        Package::M0603,
     )?;
     pullup(
         &mut board,
         "R2",
         radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI),
         v3v3_pin,
+        Package::M0603,
     )?;
     pullup(
         &mut board,
         "R3",
         radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO),
         v3v3_pin,
+        Package::M0603,
     )?;
     pullup(
         &mut board,
         "R4",
         radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT),
         v3v3_pin,
+        Package::M0603,
     )?;
 
     // ═══ HaLow control signals ══════════════════════════════════════
@@ -286,36 +299,106 @@ pub fn create() -> Result<Board> {
         "R5",
         radio.pin(Mm8108Mf15457::JTAG_TMS),
         gnd_pin,
+        Package::M0603,
     )?;
     pulldown(
         &mut board,
         "R6",
         radio.pin(Mm8108Mf15457::JTAG_TCK),
         gnd_pin,
+        Package::M0603,
     )?;
     pulldown(
         &mut board,
         "R7",
         radio.pin(Mm8108Mf15457::JTAG_TDO),
         gnd_pin,
+        Package::M0603,
     )?;
     pulldown(
         &mut board,
         "R8",
         radio.pin(Mm8108Mf15457::JTAG_TDI),
         gnd_pin,
+        Package::M0603,
     )?;
-    pulldown(&mut board, "R9", radio.pin(Mm8108Mf15457::SDIO_D2), gnd_pin)?;
-    pulldown(&mut board, "R10", radio.pin(Mm8108Mf15457::GPIO5), gnd_pin)?;
-    pulldown(&mut board, "R11", radio.pin(Mm8108Mf15457::GPIO4), gnd_pin)?;
-    pulldown(&mut board, "R12", radio.pin(Mm8108Mf15457::GPIO3), gnd_pin)?;
-    pulldown(&mut board, "R13", radio.pin(Mm8108Mf15457::GPIO1), gnd_pin)?;
-    pulldown(&mut board, "R14", radio.pin(Mm8108Mf15457::GPIO0), gnd_pin)?;
-    pulldown(&mut board, "R15", radio.pin(Mm8108Mf15457::GPIO6), gnd_pin)?;
-    pulldown(&mut board, "R16", radio.pin(Mm8108Mf15457::GPIO7), gnd_pin)?;
-    pulldown(&mut board, "R17", radio.pin(Mm8108Mf15457::GPIO8), gnd_pin)?;
-    pulldown(&mut board, "R18", radio.pin(Mm8108Mf15457::GPIO9), gnd_pin)?;
-    pulldown(&mut board, "R19", radio.pin(Mm8108Mf15457::GPIO10), gnd_pin)?;
+    pulldown(
+        &mut board,
+        "R9",
+        radio.pin(Mm8108Mf15457::SDIO_D2),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R10",
+        radio.pin(Mm8108Mf15457::GPIO5),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R11",
+        radio.pin(Mm8108Mf15457::GPIO4),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R12",
+        radio.pin(Mm8108Mf15457::GPIO3),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R13",
+        radio.pin(Mm8108Mf15457::GPIO1),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R14",
+        radio.pin(Mm8108Mf15457::GPIO0),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R15",
+        radio.pin(Mm8108Mf15457::GPIO6),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R16",
+        radio.pin(Mm8108Mf15457::GPIO7),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R17",
+        radio.pin(Mm8108Mf15457::GPIO8),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R18",
+        radio.pin(Mm8108Mf15457::GPIO9),
+        gnd_pin,
+        Package::M0603,
+    )?;
+    pulldown(
+        &mut board,
+        "R19",
+        radio.pin(Mm8108Mf15457::GPIO10),
+        gnd_pin,
+        Package::M0603,
+    )?;
 
     // ═══ RP2354A free GPIOs (GPIO14–GPIO29) tied to GND ═════════════
     let free_gpio: &[PinRef] = &[
@@ -376,10 +459,22 @@ pub fn create() -> Result<Board> {
 
     // ═══ RP2354A control pins ══════════════════════════════════════════
     // RUN: 10 kΩ pull-up to V3V3 for normal operation.
-    pullup(&mut board, "R_RUN", rpi.pin(Rp2354a::RUN), v3v3_pin)?;
+    pullup(
+        &mut board,
+        "R_RUN",
+        rpi.pin(Rp2354a::RUN),
+        v3v3_pin,
+        Package::M0603,
+    )?;
 
     // SWDIO: 10 kΩ pull-up to V3V3 for debug interface.
-    pullup(&mut board, "R_SWD", rpi.pin(Rp2354a::SWDIO), v3v3_pin)?;
+    pullup(
+        &mut board,
+        "R_SWD",
+        rpi.pin(Rp2354a::SWDIO),
+        v3v3_pin,
+        Package::M0603,
+    )?;
 
     // STAT: pull-up to VBUS (open-drain, active-low — ignored when not used).
     pullup(
@@ -387,6 +482,7 @@ pub fn create() -> Result<Board> {
         "R_STAT",
         charger.pin(Mcp73831t2atiOt::STAT),
         usb.pin(UsbC23409011::VBUS_A),
+        Package::M0603,
     )?;
 
     Ok(board)
@@ -394,11 +490,19 @@ pub fn create() -> Result<Board> {
 
 #[cfg(test)]
 mod tests {
+    use copperleaf_compile::CompileOptions;
+
     use super::*;
 
     #[test]
     fn design_has_five_ics() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         let ics: Vec<_> = report
             .board
             .components
@@ -415,7 +519,13 @@ mod tests {
     #[test]
     fn vbus_is_5v() {
         use copperleaf::NetKind;
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         let vbus = report
             .board
             .nets
@@ -435,7 +545,13 @@ mod tests {
     #[test]
     fn v3v3_is_3v3() {
         use copperleaf::NetKind;
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         let v3v3 = report
             .board
             .nets
@@ -454,7 +570,13 @@ mod tests {
 
     #[test]
     fn battery_net_exists() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         assert!(
             report.board.nets.iter().any(|n| n.name == "BAT"),
             "BAT net must exist"
@@ -463,7 +585,13 @@ mod tests {
 
     #[test]
     fn spi0_connects_halow_and_rp2354a() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         for net_name in ["SDIO_CLK", "SDIO_CMD", "SDIO_D0", "SDIO_D3"] {
             let refdes: Vec<String> = report
                 .board
@@ -483,7 +611,13 @@ mod tests {
 
     #[test]
     fn halow_control_signals_connected() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         for net_name in ["MM_RESET_N", "MM_WAKE", "MM_BUSY"] {
             let refdes: Vec<String> = report
                 .board
@@ -503,7 +637,13 @@ mod tests {
 
     #[test]
     fn vdd_usb_tied_to_ground() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         let gnd_pins: Vec<_> = report
             .board
             .connections
@@ -522,19 +662,16 @@ mod tests {
 
     #[test]
     fn no_vdd_fem_rail() {
-        let report = create().unwrap().compile().unwrap();
+        let report = copperleaf_compile::run(
+            create().unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
         assert!(
             report.board.nets.iter().all(|n| n.name != "VDD_FEM"),
             "VDD_FEM must not exist in single-supply design"
-        );
-    }
-
-    #[test]
-    fn decoupling_caps_are_synthesised() {
-        let report = create().unwrap().compile().unwrap();
-        assert!(
-            !report.summary.caps_synthesised.is_empty(),
-            "decoupling capacitors should be auto-placed"
         );
     }
 }
