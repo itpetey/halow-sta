@@ -12,18 +12,18 @@ use copperleaf_parts_passives::footprint::Package;
 mod ethernet_board;
 mod minimal_board;
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, ValueEnum)]
+enum BoardName {
+    Minimal,
+    Ethernet,
+}
+
 #[derive(Parser)]
 struct Cli {
     #[arg(short, long, value_enum)]
     board: BoardName,
     #[arg(short, long, default_value = "boards/")]
     project_dir: PathBuf,
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, ValueEnum)]
-enum BoardName {
-    Minimal,
-    Ethernet,
 }
 
 fn main() -> Result<()> {
