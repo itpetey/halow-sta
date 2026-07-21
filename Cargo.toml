@@ -6,19 +6,19 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0"
 clap = { version = "4.6", features = ["derive", "help"] }
-copperleaf = { path = "../../copperleaf/new/crates/core" }
+copperleaf = { path = "../../copperleaf/main/crates/core" }
 copperleaf-backend-kicad = {
-  path = "../../copperleaf/new/crates/backend-kicad"
+  path = "../../copperleaf/main/crates/backend-kicad"
 }
-copperleaf-compile = { path = "../../copperleaf/new/crates/compile" }
-copperleaf-parts-connectors = { path = "../../copperleaf/new/parts/connectors" }
-copperleaf-parts-microchip = { path = "../../copperleaf/new/parts/microchip" }
-copperleaf-parts-morsemicro = { path = "../../copperleaf/new/parts/morsemicro" }
-copperleaf-parts-passives = { path = "../../copperleaf/new/parts/passives" }
+copperleaf-compile = { path = "../../copperleaf/main/crates/compile" }
+copperleaf-parts-connectors = { path = "../../copperleaf/main/parts/connectors" }
+copperleaf-parts-microchip = { path = "../../copperleaf/main/parts/microchip" }
+copperleaf-parts-morsemicro = { path = "../../copperleaf/main/parts/morsemicro" }
+copperleaf-parts-passives = { path = "../../copperleaf/main/parts/passives" }
 copperleaf-parts-raspberrypi = {
-  path = "../../copperleaf/new/parts/raspberrypi"
+  path = "../../copperleaf/main/parts/raspberrypi"
 }
 copperleaf-parts-texas-instruments = {
-  path = "../../copperleaf/new/parts/texas-instruments"
+  path = "../../copperleaf/main/parts/texas-instruments"
 }
-copperleaf-parts-wiznet = { path = "../../copperleaf/new/parts/wiznet" }
+copperleaf-parts-wiznet = { path = "../../copperleaf/main/parts/wiznet" }

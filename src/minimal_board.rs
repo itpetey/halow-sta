@@ -17,7 +17,7 @@
 use anyhow::{Context, Result};
 use copperleaf::{
     Board, PinRef, UnitExt,
-    helpers::{join, pwr_net},
+    helpers::join,
 };
 use copperleaf_parts_connectors::{Conmhf4SmdGT, S2bPhSm4TbLfSn, UsbC23409011};
 use copperleaf_parts_microchip::Mcp73831t2atiOt;
@@ -138,7 +138,7 @@ pub fn create() -> Result<Board> {
     board.connect(reg.pin(Tps63031dskr::EXP), rpi.pin(Rp2354a::VREG_PGND))?;
 
     // ═══ 3.3 V rail (V3V3) — regulated output ═══════════════════════
-    let v3v3 = pwr_net(&mut board, reg.pin(Tps63031dskr::VOUT))?;
+    let v3v3 = board.net(reg.pin(Tps63031dskr::VOUT))?;
     board.set_net_voltage(v3v3, 3.3.volt());
     board.set_net_name(v3v3, "V3V3");
 
@@ -597,7 +597,7 @@ mod tests {
                 .board
                 .connections
                 .iter()
-                .filter(|c| c.net.0 == net_name)
+                .filter(|c| report.board.net(c.net).name == net_name)
                 .map(|c| report.board.components[c.component].refdes.clone())
                 .collect();
             assert!(refdes.contains(&"U1".into()), "{} missing HaLow", net_name);
@@ -623,7 +623,7 @@ mod tests {
                 .board
                 .connections
                 .iter()
-                .filter(|c| c.net.0 == net_name)
+                .filter(|c| report.board.net(c.net).name == net_name)
                 .map(|c| report.board.components[c.component].refdes.clone())
                 .collect();
             assert!(refdes.contains(&"U1".into()), "{} missing HaLow", net_name);
@@ -649,7 +649,7 @@ mod tests {
             .connections
             .iter()
             .filter(|c| {
-                c.net.0 == "GND"
+                report.board.net(c.net).name == "GND"
                     && report.board.components[c.component].refdes == "U1"
                     && c.pin == "VDD_USB"
             })

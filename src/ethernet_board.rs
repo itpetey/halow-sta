@@ -13,7 +13,7 @@
 use anyhow::{Context, Result};
 use copperleaf::{
     Board, PinRef, UnitExt,
-    helpers::{join, pwr_net},
+    helpers::join,
 };
 use copperleaf_parts_connectors::Conmhf4SmdGT;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
@@ -55,15 +55,15 @@ pub fn create() -> Result<Board> {
     board.set_net_voltage(vdd_io, 3.3.volt());
     board.set_net_name(vdd_io, "VDD_IO");
 
-    let vbat = pwr_net(&mut board, radio.pin(Mm8108Mf15457::VBAT))?;
+    let vbat = board.net(radio.pin(Mm8108Mf15457::VBAT))?;
     board.set_net_voltage(vbat, 3.3.volt());
     board.set_net_name(vbat, "VBAT");
 
-    let vbat_tx = pwr_net(&mut board, radio.pin(Mm8108Mf15457::VBAT_TX))?;
+    let vbat_tx = board.net(radio.pin(Mm8108Mf15457::VBAT_TX))?;
     board.set_net_voltage(vbat_tx, 3.3.volt());
     board.set_net_name(vbat_tx, "VBAT_TX");
 
-    let avdd = pwr_net(&mut board, eth.pin(W5500::AVDD))?;
+    let avdd = board.net(eth.pin(W5500::AVDD))?;
     board.set_net_voltage(avdd, 3.3.volt());
     board.set_net_name(avdd, "AVDD");
 
@@ -516,7 +516,7 @@ mod tests {
                 .board
                 .connections
                 .iter()
-                .filter(|c| c.net.0 == net_name)
+                .filter(|c| report.board.net(c.net).name == net_name)
                 .map(|c| report.board.components[c.component].refdes.clone())
                 .collect();
             assert!(refdes.contains(&"U1".into()), "{} missing HaLow", net_name);
@@ -542,7 +542,7 @@ mod tests {
                 .board
                 .connections
                 .iter()
-                .filter(|c| c.net.0 == net_name)
+                .filter(|c| report.board.net(c.net).name == net_name)
                 .map(|c| report.board.components[c.component].refdes.clone())
                 .collect();
             assert!(refdes.contains(&"U3".into()), "{} missing W5500", net_name);
@@ -568,7 +568,7 @@ mod tests {
                 .board
                 .connections
                 .iter()
-                .filter(|c| c.net.0 == net_name)
+                .filter(|c| report.board.net(c.net).name == net_name)
                 .map(|c| report.board.components[c.component].refdes.clone())
                 .collect();
             assert!(refdes.contains(&"U1".into()), "{} missing HaLow", net_name);
@@ -594,7 +594,7 @@ mod tests {
             .connections
             .iter()
             .filter(|c| {
-                c.net.0 == "GND"
+                report.board.net(c.net).name == "GND"
                     && report.board.components[c.component].refdes == "U1"
                     && c.pin == "VDD_USB"
             })
