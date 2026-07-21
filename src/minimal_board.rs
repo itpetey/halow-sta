@@ -15,10 +15,7 @@
 //! constraints declared on each part definition.
 
 use anyhow::{Context, Result};
-use copperleaf::{
-    Board, PinRef, UnitExt,
-    helpers::join,
-};
+use copperleaf::{Board, PinRef, UnitExt, helpers::join};
 use copperleaf_parts_connectors::{Conmhf4SmdGT, S2bPhSm4TbLfSn, UsbC23409011};
 use copperleaf_parts_microchip::Mcp73831t2atiOt;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
