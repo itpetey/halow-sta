@@ -471,11 +471,7 @@ mod tests {
             .iter()
             .filter(|c| c.refdes.starts_with('U'))
             .collect();
-        assert_eq!(
-            ics.len(),
-            3,
-            "U1=RP2354A, U2=HaLow, U3=Regulator"
-        );
+        assert_eq!(ics.len(), 3, "U1=RP2354A, U2=HaLow, U3=Regulator");
     }
 
     #[test]
