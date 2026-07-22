@@ -11,10 +11,12 @@ use copperleaf_parts_passives::footprint::Package;
 
 mod ethernet_board;
 mod minimal_board;
+mod minimal_lipo_board;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, ValueEnum)]
 enum BoardName {
     Minimal,
+    MinimalLipo,
     Ethernet,
 }
 
@@ -32,6 +34,7 @@ fn main() -> Result<()> {
     let board = match args.board {
         BoardName::Ethernet => ethernet_board::create()?,
         BoardName::Minimal => minimal_board::create()?,
+        BoardName::MinimalLipo => minimal_lipo_board::create()?,
     };
 
     let mut emit_path = args.project_dir;
