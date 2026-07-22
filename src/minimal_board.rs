@@ -420,6 +420,8 @@ pub fn create() -> Result<Board> {
         Rp2354a::QSPI_SD2,
         Rp2354a::QSPI_SD3,
         Rp2354a::QSPI_SS,
+        Rp2354a::USB_DM,
+        Rp2354a::USB_DP,
     ];
     for &pin in free_gpio {
         board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
