@@ -13,17 +13,17 @@
 
 use anyhow::{Context, Result};
 use copperleaf::{Board, PinRef, UnitExt, helpers::join};
-use copperleaf_parts_connectors::ConSmaEdgeS;
+use copperleaf_parts_connectors::{Bh123a, ConSmaEdgeS};
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
 use copperleaf_parts_passives::{
-    B82472p6152m000, B82472p6222m000, ThruHoleHeader, footprint::Package, pulldown, pullup,
+    B82472p6152m000, B82472p6222m000, footprint::Package, pulldown, pullup,
 };
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_texas_instruments::Tps63031dskr;
 
 pub fn create() -> Result<Board> {
     let mut board = Board::new("halow-sta-low-min");
-    board.set_dimensions(17.0, 35.0); // 17mm wide, 35mm high
+    board.set_dimensions(18.3, 48.0); // 18.3mm wide, 48mm high
 
     //
     // Components
@@ -36,7 +36,7 @@ pub fn create() -> Result<Board> {
     // Buck-Boost converter
     let reg = board.add("U3", Tps63031dskr::new());
     // Through-hole battery terminals
-    let batt = board.add("J1", ThruHoleHeader::new(1, 2, 1.0, 1.7, 2.54));
+    let batt = board.add("J1", Bh123a::new());
     // SMA Female antenna socket
     let ant = board.add("J2", ConSmaEdgeS::new());
     // Power inductors
@@ -54,13 +54,10 @@ pub fn create() -> Result<Board> {
             radio.pin(Mm8108Mf15457::GND_1),
             reg.pin(Tps63031dskr::GND),
             reg.pin(Tps63031dskr::PGND),
-            batt.pin(ThruHoleHeader::pin_ref(1, 2)),
+            batt.pin(Bh123a::NEGATIVE),
         ],
     )?;
     board.set_net_name(gnd, "GND");
-
-    // Shield tie-downs for antenna socket
-    // board.connect(usb.pin(UsbC23409011::SHIELD_1), rpi.pin(Rp2354a::VREG_PGND))?;
 
     //
     // Battery net (BAT)
@@ -71,7 +68,7 @@ pub fn create() -> Result<Board> {
     let bat = join(
         &mut board,
         &[
-            batt.pin(ThruHoleHeader::pin_ref(1, 1)),
+            batt.pin(Bh123a::POSITIVE),
             reg.pin(Tps63031dskr::VIN),
             rpi.pin(Rp2354a::VREG_VIN),
         ],
