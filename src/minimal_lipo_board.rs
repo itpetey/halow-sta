@@ -15,7 +15,7 @@
 //! constraints declared on each part definition.
 
 use anyhow::{Context, Result};
-use copperleaf::{Board, PinRef, UnitExt, helpers::join};
+use copperleaf::{Board, DesignRules, PinRef, UnitExt, helpers::join};
 use copperleaf_parts_connectors::{Conmhf4SmdGT, S2bPhSm4TbLfSn, UsbC23409011};
 use copperleaf_parts_microchip::Mcp73831t2atiOt;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
@@ -28,6 +28,7 @@ use copperleaf_parts_texas_instruments::Tps63031dskr;
 pub fn create() -> Result<Board> {
     let mut board = Board::new("halow-sta-low-min");
     board.set_dimensions(60.0, 40.0); // 60mm wide, 40mm high
+    board.set_design_rules(DesignRules::jlcpcb_2layer());
 
     let rpi = board.add("U2", Rp2354a::new());
     let radio = board.add("U1", Mm8108Mf15457::new());

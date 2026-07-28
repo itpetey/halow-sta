@@ -11,7 +11,7 @@
 //! constraints declared on each part definition.
 
 use anyhow::{Context, Result};
-use copperleaf::{Board, PinRef, UnitExt, helpers::join};
+use copperleaf::{Board, DesignRules, PinRef, UnitExt, helpers::join};
 use copperleaf_parts_connectors::Conmhf4SmdGT;
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
 use copperleaf_parts_passives::{
@@ -22,6 +22,7 @@ use copperleaf_parts_wiznet::W5500;
 
 pub fn create() -> Result<Board> {
     let mut board = Board::new("halow-sta-low-eth");
+    board.set_design_rules(DesignRules::jlcpcb_2layer());
 
     let rpi = board.add("U2", Rp2354a::new());
     let radio = board.add("U1", Mm8108Mf15457::new());

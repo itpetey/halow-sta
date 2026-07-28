@@ -12,8 +12,8 @@
 //! constraints declared on each part definition.
 
 use anyhow::{Context, Result};
-use copperleaf::{Board, PinRef, UnitExt, helpers::join};
-use copperleaf_parts_connectors::{Bh123a, ConSmaEdgeS};
+use copperleaf::{Board, DesignRules, Stackup, UnitExt, helpers::join};
+use copperleaf_parts_connectors::{Bh123a, ConSmaEdgeS, Consma002L, TestPad};
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
 use copperleaf_parts_passives::{
     B82472p6152m000, B82472p6222m000, footprint::Package, pulldown, pullup,
@@ -21,9 +21,11 @@ use copperleaf_parts_passives::{
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_texas_instruments::Tps63031dskr;
 
-pub fn create() -> Result<Board> {
-    let mut board = Board::new("halow-sta-low-min");
-    board.set_dimensions(18.3, 48.0); // 18.3mm wide, 48mm high
+pub fn create(name: Option<&str>) -> Result<Board> {
+    let mut board = Board::new(name.unwrap_or("halow-sta-low-min"));
+    board.set_dimensions(19.0, 52.0);
+    board.set_design_rules(DesignRules::jlcpcb_4layer());
+    board.set_stackup(Stackup::four_layer());
 
     //
     // Components
@@ -36,9 +38,9 @@ pub fn create() -> Result<Board> {
     // Buck-Boost converter
     let reg = board.add("U3", Tps63031dskr::new());
     // Through-hole battery terminals
-    let batt = board.add("J1", Bh123a::new());
+    let batterm = board.add("J1", Bh123a::new());
     // SMA Female antenna socket
-    let ant = board.add("J2", ConSmaEdgeS::new());
+    let ant = board.add("J2", Consma002L::new());
     // Power inductors
     let l_pwr = board.add("L_PWR", B82472p6152m000::new());
     let l_vreg = board.add("L_VREG", B82472p6222m000::new());
@@ -54,7 +56,7 @@ pub fn create() -> Result<Board> {
             radio.pin(Mm8108Mf15457::GND_1),
             reg.pin(Tps63031dskr::GND),
             reg.pin(Tps63031dskr::PGND),
-            batt.pin(Bh123a::NEGATIVE),
+            batterm.pin(Bh123a::NEGATIVE),
         ],
     )?;
     board.set_net_name(gnd, "GND");
@@ -65,14 +67,7 @@ pub fn create() -> Result<Board> {
 
     // Battery connector positive, buck-boost input,
     // and RP2354A internal regulator input (VREG_VIN: 2.7–5.5 V).
-    let bat = join(
-        &mut board,
-        &[
-            batt.pin(Bh123a::POSITIVE),
-            reg.pin(Tps63031dskr::VIN),
-            rpi.pin(Rp2354a::VREG_VIN),
-        ],
-    )?;
+    let bat = board.connect(batterm.pin(Bh123a::POSITIVE), reg.pin(Tps63031dskr::VIN))?;
     board.set_net_voltage(bat, 3.7.volt());
     board.set_net_name(bat, "BAT");
 
@@ -103,7 +98,14 @@ pub fn create() -> Result<Board> {
     // 3.3 V net (V3V3)
     //
 
-    let v3v3 = board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_1))?;
+    let v3v3 = join(
+        &mut board,
+        &[
+            rpi.pin(Rp2354a::VREG_VIN),
+            reg.pin(Tps63031dskr::VOUT),
+            rpi.pin(Rp2354a::IOVDD_1),
+        ],
+    )?;
     board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_2))?;
     board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_3))?;
     board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_4))?;
@@ -389,7 +391,7 @@ pub fn create() -> Result<Board> {
     )?;
 
     // RP2354A
-    let free_gpio: &[PinRef] = &[
+    for &pin in &[
         Rp2354a::GPIO8,
         Rp2354a::GPIO9,
         Rp2354a::GPIO10,
@@ -416,11 +418,9 @@ pub fn create() -> Result<Board> {
         Rp2354a::QSPI_SD1,
         Rp2354a::QSPI_SD2,
         Rp2354a::QSPI_SD3,
-        Rp2354a::QSPI_SS,
         Rp2354a::USB_DM,
         Rp2354a::USB_DP,
-    ];
-    for &pin in free_gpio {
+    ] {
         board.connect(rpi.pin(pin), rpi.pin(Rp2354a::VREG_PGND))?;
     }
 
@@ -446,6 +446,35 @@ pub fn create() -> Result<Board> {
         Package::M0603,
     )?;
 
+    // BOOTSEL (QSPI_SS): 10 kΩ pull-up to V3V3 for normal boot.
+    // Active-low: HIGH = boot from flash, LOW = enter UF2 bootloader.
+    pullup(
+        &mut board,
+        "R_BS",
+        rpi.pin(Rp2354a::QSPI_SS),
+        v3v3_pin,
+        Package::M0603,
+    )?;
+
+    //
+    // SWD debug header (5 × pogo-pin pads)
+    //
+
+    let gnd_pad = board.add("TP_GND", TestPad::pogo());
+    board.connect(gnd_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::VREG_PGND))?;
+
+    let swclk_pad = board.add("TP_SWCLK", TestPad::pogo());
+    board.connect(swclk_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::SWCLK))?;
+
+    let swdio_pad = board.add("TP_SWDIO", TestPad::pogo());
+    board.connect(swdio_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::SWDIO))?;
+
+    let run_pad = board.add("TP_RUN", TestPad::pogo());
+    board.connect(run_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::RUN))?;
+
+    let bootsel_pad = board.add("TP_BOOTSEL", TestPad::pogo());
+    board.connect(bootsel_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::QSPI_SS))?;
+
     Ok(board)
 }
 
@@ -458,7 +487,7 @@ mod tests {
     #[test]
     fn design_has_three_ics() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -477,7 +506,7 @@ mod tests {
     fn v3v3_is_3v3() {
         use copperleaf::NetKind;
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -502,7 +531,7 @@ mod tests {
     #[test]
     fn battery_net_exists() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -517,7 +546,7 @@ mod tests {
     #[test]
     fn spi0_connects_halow_and_rp2354a() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -543,7 +572,7 @@ mod tests {
     #[test]
     fn halow_control_signals_connected() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -569,7 +598,7 @@ mod tests {
     #[test]
     fn vdd_usb_tied_to_ground() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -594,7 +623,7 @@ mod tests {
     #[test]
     fn no_vdd_fem_rail() {
         let report = copperleaf_compile::run(
-            create().unwrap(),
+            create(None).unwrap(),
             &CompileOptions {
                 decoupling_footprint: Package::M0603,
             },
@@ -604,5 +633,46 @@ mod tests {
             report.board.nets.iter().all(|n| n.name != "VDD_FEM"),
             "VDD_FEM must not exist in single-supply design"
         );
+    }
+
+    #[test]
+    fn boootsel_pullup_exists() {
+        let report = copperleaf_compile::run(
+            create(None).unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
+        // BOOTSEL (QSPI_SS) must have a pull-up — verify the R_BS resistor
+        // connects QSPI_SS to V3V3.
+        let r_bs: Vec<_> = report
+            .board
+            .connections
+            .iter()
+            .filter(|c| report.board.components[c.component].refdes == "R_BS")
+            .collect();
+        assert_eq!(
+            r_bs.len(),
+            2,
+            "R_BS must have two connections (QSPI_SS + V3V3)"
+        );
+    }
+
+    #[test]
+    fn swd_pogo_pads_exist() {
+        let report = copperleaf_compile::run(
+            create(None).unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
+        for refdes in ["TP_GND", "TP_SWCLK", "TP_SWDIO", "TP_RUN", "TP_BOOTSEL"] {
+            assert!(
+                report.board.components.iter().any(|c| c.refdes == refdes),
+                "missing pogo pad: {refdes}"
+            );
+        }
     }
 }

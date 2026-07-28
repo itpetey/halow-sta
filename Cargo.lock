@@ -146,6 +146,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "copperleaf-layout"
+version = "0.1.0"
+dependencies = [
+ "copperleaf",
+ "thiserror",
+]
+
+[[package]]
 name = "copperleaf-part-codegen"
 version = "0.1.0"
 dependencies = [
@@ -230,6 +238,7 @@ dependencies = [
  "copperleaf",
  "copperleaf-backend-kicad",
  "copperleaf-compile",
+ "copperleaf-layout",
  "copperleaf-parts-connectors",
  "copperleaf-parts-microchip",
  "copperleaf-parts-morsemicro",
