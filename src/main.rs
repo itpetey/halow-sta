@@ -43,7 +43,7 @@ fn main() -> Result<()> {
 
     let board = match args.board {
         BoardName::Ethernet => ethernet_board::create()?,
-        BoardName::Minimal => minimal_board::create(args.name.as_ref().map(|n| &**n))?,
+        BoardName::Minimal => minimal_board::create(args.name.as_deref())?,
         BoardName::MinimalLipo => minimal_lipo_board::create()?,
     };
 
