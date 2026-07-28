@@ -36,6 +36,9 @@ struct Cli {
     /// Auto-layout the PCB
     #[arg(short, long, default_value_t = false)]
     layout: bool,
+    /// Update the existing PCB to preserve existing layout
+    #[arg(short, long, default_value_t = false)]
+    update: bool,
 }
 
 fn main() -> Result<()> {
@@ -73,8 +76,10 @@ fn main() -> Result<()> {
     if args.layout {
         let solved = solve(&report.board, &SolveOptions::default())?;
         backend.emit_with_layout(&emit_path, &report.board, &solved.layout)?;
-    } else {
+    } else if args.update {
         backend.emit_update(&emit_path, &report.board)?;
+    } else {
+        backend.emit(&emit_path, &report.board)?;
     }
 
     Ok(())
