@@ -16,7 +16,8 @@ use copperleaf::{Board, DesignRules, Stackup, UnitExt, helpers::join};
 use copperleaf_parts_connectors::{Bh123a, ConSmaEdgeS, Consma002L, TestPad};
 use copperleaf_parts_morsemicro::Mm8108Mf15457;
 use copperleaf_parts_passives::{
-    B82472p6152m000, B82472p6222m000, footprint::Package, pulldown, pullup,
+    B82472p6152m000, B82472p6222m000, Comp5988010107f, Comp5988060107f, Resistor,
+    footprint::Package, pulldown, pullup,
 };
 use copperleaf_parts_raspberrypi::Rp2354a;
 use copperleaf_parts_texas_instruments::Tps63031dskr;
@@ -68,6 +69,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
     // Battery connector positive, buck-boost input,
     // and RP2354A internal regulator input (VREG_VIN: 2.7–5.5 V).
     let bat = board.connect(batterm.pin(Bh123a::POSITIVE), reg.pin(Tps63031dskr::VIN))?;
+    board.connect(rpi.pin(Rp2354a::VREG_VIN), reg.pin(Tps63031dskr::VIN))?;
     board.set_net_voltage(bat, 3.7.volt());
     board.set_net_name(bat, "BAT");
 
@@ -101,24 +103,20 @@ pub fn create(name: Option<&str>) -> Result<Board> {
     let v3v3 = join(
         &mut board,
         &[
-            rpi.pin(Rp2354a::VREG_VIN),
             reg.pin(Tps63031dskr::VOUT),
             rpi.pin(Rp2354a::IOVDD_1),
+            rpi.pin(Rp2354a::IOVDD_2),
+            rpi.pin(Rp2354a::IOVDD_3),
+            rpi.pin(Rp2354a::IOVDD_4),
+            rpi.pin(Rp2354a::IOVDD_5),
+            rpi.pin(Rp2354a::IOVDD_6),
+            radio.pin(Mm8108Mf15457::VDDIO),
+            radio.pin(Mm8108Mf15457::VBAT),
+            radio.pin(Mm8108Mf15457::VBAT_TX),
         ],
     )?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_2))?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_3))?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_4))?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_5))?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), rpi.pin(Rp2354a::IOVDD_6))?;
     board.set_net_voltage(v3v3, 3.3.volt());
     board.set_net_name(v3v3, "V3V3");
-    board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VDDIO))?;
-    board.connect(reg.pin(Tps63031dskr::VOUT), radio.pin(Mm8108Mf15457::VBAT))?;
-    board.connect(
-        reg.pin(Tps63031dskr::VOUT),
-        radio.pin(Mm8108Mf15457::VBAT_TX),
-    )?;
 
     //
     // RP2354A internal voltage regulator (1.1 V core)
@@ -410,9 +408,6 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         Rp2354a::GPIO23,
         Rp2354a::GPIO24,
         Rp2354a::GPIO25,
-        Rp2354a::GPIO26_ADC0,
-        Rp2354a::GPIO27_ADC1,
-        Rp2354a::GPIO28_ADC2,
         Rp2354a::GPIO29_ADC3,
         Rp2354a::QSPI_SD0,
         Rp2354a::QSPI_SD1,
@@ -460,6 +455,9 @@ pub fn create(name: Option<&str>) -> Result<Board> {
     // SWD debug header (5 × pogo-pin pads)
     //
 
+    let bat_pad = board.add("TP_BAT", TestPad::pogo());
+    board.connect(bat_pad.pin(TestPad::PAD), batterm.pin(Bh123a::POSITIVE))?;
+
     let gnd_pad = board.add("TP_GND", TestPad::pogo());
     board.connect(gnd_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::VREG_PGND))?;
 
@@ -474,6 +472,42 @@ pub fn create(name: Option<&str>) -> Result<Board> {
 
     let bootsel_pad = board.add("TP_BOOTSEL", TestPad::pogo());
     board.connect(bootsel_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::QSPI_SS))?;
+
+    //
+    // Battery-level indicator (2-LED)
+    //
+    // Red (D1) on GPIO27 — lit when battery ≤ 15 %
+    // Green (D2) on GPIO28 — lit when battery > 15 %
+    // A 100 kΩ / 100 kΩ resistive divider scales BAT (3.0–3.7 V) to
+    // ~1.5–1.85 V for the RP2354A ADC input on GPIO26.
+
+    // ── Voltage divider: BAT → R_BAT_TOP → ADC node → R_BAT_BOT → GND ──
+
+    let r_bat_top = board.add("R_BAT_TOP", Resistor::new(100.0.kohm(), Package::M0603));
+    let r_bat_bot = board.add("R_BAT_BOT", Resistor::new(100.0.kohm(), Package::M0603));
+
+    board.connect(r_bat_top.pin(Resistor::PIN1), batterm.pin(Bh123a::POSITIVE))?;
+    board.connect(r_bat_top.pin(Resistor::PIN2), rpi.pin(Rp2354a::GPIO26_ADC0))?;
+    board.connect(r_bat_bot.pin(Resistor::PIN1), rpi.pin(Rp2354a::GPIO26_ADC0))?;
+    board.connect(r_bat_bot.pin(Resistor::PIN2), rpi.pin(Rp2354a::VREG_PGND))?;
+
+    // ── Red LED (D1): GPIO27 → R_RED → LED anode → LED cathode → GND ──
+
+    let r_red = board.add("R_RED", Resistor::new(1.0.kohm(), Package::M0603));
+    let d_red = board.add("D1", Comp5988010107f::new());
+
+    board.connect(r_red.pin(Resistor::PIN1), rpi.pin(Rp2354a::GPIO27_ADC1))?;
+    board.connect(r_red.pin(Resistor::PIN2), d_red.pin(Comp5988010107f::A))?;
+    board.connect(d_red.pin(Comp5988010107f::C), rpi.pin(Rp2354a::VREG_PGND))?;
+
+    // ── Green LED (D2): GPIO28 → R_GRN → LED anode → LED cathode → GND ──
+
+    let r_grn = board.add("R_GRN", Resistor::new(1.0.kohm(), Package::M0603));
+    let d_grn = board.add("D2", Comp5988060107f::new());
+
+    board.connect(r_grn.pin(Resistor::PIN1), rpi.pin(Rp2354a::GPIO28_ADC2))?;
+    board.connect(r_grn.pin(Resistor::PIN2), d_grn.pin(Comp5988060107f::A))?;
+    board.connect(d_grn.pin(Comp5988060107f::C), rpi.pin(Rp2354a::VREG_PGND))?;
 
     Ok(board)
 }
@@ -674,5 +708,64 @@ mod tests {
                 "missing pogo pad: {refdes}"
             );
         }
+    }
+
+    #[test]
+    fn battery_leds_exist() {
+        let report = copperleaf_compile::run(
+            create(None).unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
+        // D1 = red LED (low battery), D2 = green LED (adequate battery)
+        for refdes in ["D1", "D2", "R_RED", "R_GRN"] {
+            assert!(
+                report.board.components.iter().any(|c| c.refdes == refdes),
+                "missing battery indicator component: {refdes}"
+            );
+        }
+    }
+
+    #[test]
+    fn battery_divider_exists() {
+        let report = copperleaf_compile::run(
+            create(None).unwrap(),
+            &CompileOptions {
+                decoupling_footprint: Package::M0603,
+            },
+        )
+        .unwrap();
+        // R_BAT_TOP and R_BAT_BOT form a voltage divider from BAT to GND
+        // with GPIO26_ADC0 at the midpoint.
+        for refdes in ["R_BAT_TOP", "R_BAT_BOT"] {
+            assert!(
+                report.board.components.iter().any(|c| c.refdes == refdes),
+                "missing battery divider resistor: {refdes}"
+            );
+        }
+        // Verify R_BAT_TOP is connected to BAT (POSITIVE terminal of J1)
+        let top_bat = report
+            .board
+            .connections
+            .iter()
+            .filter(|c| {
+                let refdes = &report.board.components[c.component].refdes;
+                refdes == "R_BAT_TOP" || refdes == "J1"
+            })
+            .count();
+        assert!(top_bat >= 2, "R_BAT_TOP must connect to BAT (J1 positive)");
+        // Verify R_BAT_BOT is connected to GND
+        let bot_gnd = report
+            .board
+            .connections
+            .iter()
+            .filter(|c| {
+                let comp = &report.board.components[c.component];
+                comp.refdes == "R_BAT_BOT" && report.board.net(c.net).name == "GND"
+            })
+            .count();
+        assert!(bot_gnd >= 1, "R_BAT_BOT must connect to GND");
     }
 }
