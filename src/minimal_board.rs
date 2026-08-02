@@ -455,22 +455,22 @@ pub fn create(name: Option<&str>) -> Result<Board> {
     // SWD debug header (5 × pogo-pin pads)
     //
 
-    let bat_pad = board.add("TP_BAT", TestPad::pogo());
+    let bat_pad = board.add("BAT", TestPad::pogo());
     board.connect(bat_pad.pin(TestPad::PAD), batterm.pin(Bh123a::POSITIVE))?;
 
-    let gnd_pad = board.add("TP_GND", TestPad::pogo());
+    let gnd_pad = board.add("GND", TestPad::pogo());
     board.connect(gnd_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::VREG_PGND))?;
 
-    let swclk_pad = board.add("TP_SWCLK", TestPad::pogo());
+    let swclk_pad = board.add("SWCLK", TestPad::pogo());
     board.connect(swclk_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::SWCLK))?;
 
-    let swdio_pad = board.add("TP_SWDIO", TestPad::pogo());
+    let swdio_pad = board.add("SWDIO", TestPad::pogo());
     board.connect(swdio_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::SWDIO))?;
 
-    let run_pad = board.add("TP_RUN", TestPad::pogo());
+    let run_pad = board.add("RUN", TestPad::pogo());
     board.connect(run_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::RUN))?;
 
-    let bootsel_pad = board.add("TP_BOOTSEL", TestPad::pogo());
+    let bootsel_pad = board.add("BOOTSEL", TestPad::pogo());
     board.connect(bootsel_pad.pin(TestPad::PAD), rpi.pin(Rp2354a::QSPI_SS))?;
 
     //
@@ -702,7 +702,7 @@ mod tests {
             },
         )
         .unwrap();
-        for refdes in ["TP_GND", "TP_SWCLK", "TP_SWDIO", "TP_RUN", "TP_BOOTSEL"] {
+        for refdes in ["GND", "SWCLK", "SWDIO", "RUN", "BOOTSEL"] {
             assert!(
                 report.board.components.iter().any(|c| c.refdes == refdes),
                 "missing pogo pad: {refdes}"
