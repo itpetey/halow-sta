@@ -24,7 +24,7 @@ use copperleaf_parts_texas_instruments::Tps63031dskr;
 
 pub fn create(name: Option<&str>) -> Result<Board> {
     let mut board = Board::new(name.unwrap_or("halow-sta-low-min"));
-    board.set_dimensions(19.0, 52.0);
+    board.set_dimensions(19.0, 60.0);
     board.set_design_rules(DesignRules::jlcpcb_4layer());
     board.set_stackup(Stackup::four_layer());
 
@@ -202,28 +202,28 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         "R1",
         radio.pin(Mm8108Mf15457::SDIO_D3_SPI_CS),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pullup(
         &mut board,
         "R2",
         radio.pin(Mm8108Mf15457::SDIO_CMD_SPI_MOSI),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pullup(
         &mut board,
         "R3",
         radio.pin(Mm8108Mf15457::SDIO_D0_SPI_MISO),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pullup(
         &mut board,
         "R4",
         radio.pin(Mm8108Mf15457::SDIO_D1_SPI_INT),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
 
     //
@@ -287,105 +287,105 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         "R5",
         radio.pin(Mm8108Mf15457::JTAG_TMS),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R6",
         radio.pin(Mm8108Mf15457::JTAG_TCK),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R7",
         radio.pin(Mm8108Mf15457::JTAG_TDO),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R8",
         radio.pin(Mm8108Mf15457::JTAG_TDI),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R9",
         radio.pin(Mm8108Mf15457::SDIO_D2),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R10",
         radio.pin(Mm8108Mf15457::GPIO5),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R11",
         radio.pin(Mm8108Mf15457::GPIO4),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R12",
         radio.pin(Mm8108Mf15457::GPIO3),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R13",
         radio.pin(Mm8108Mf15457::GPIO1),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R14",
         radio.pin(Mm8108Mf15457::GPIO0),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R15",
         radio.pin(Mm8108Mf15457::GPIO6),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R16",
         radio.pin(Mm8108Mf15457::GPIO7),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R17",
         radio.pin(Mm8108Mf15457::GPIO8),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R18",
         radio.pin(Mm8108Mf15457::GPIO9),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
     pulldown(
         &mut board,
         "R19",
         radio.pin(Mm8108Mf15457::GPIO10),
         gnd_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
 
     // RP2354A
@@ -429,7 +429,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         "R_RUN",
         rpi.pin(Rp2354a::RUN),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
 
     // SWDIO: 10 kΩ pull-up to V3V3 for debug interface.
@@ -438,7 +438,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         "R_SWD",
         rpi.pin(Rp2354a::SWDIO),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
 
     // BOOTSEL (QSPI_SS): 10 kΩ pull-up to V3V3 for normal boot.
@@ -448,7 +448,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
         "R_BS",
         rpi.pin(Rp2354a::QSPI_SS),
         v3v3_pin,
-        Package::M0603,
+        Package::M1005,
     )?;
 
     //
@@ -483,8 +483,8 @@ pub fn create(name: Option<&str>) -> Result<Board> {
 
     // ── Voltage divider: BAT → R_BAT_TOP → ADC node → R_BAT_BOT → GND ──
 
-    let r_bat_top = board.add("R_BAT_TOP", Resistor::new(100.0.kohm(), Package::M0603));
-    let r_bat_bot = board.add("R_BAT_BOT", Resistor::new(100.0.kohm(), Package::M0603));
+    let r_bat_top = board.add("R_BAT_TOP", Resistor::new(100.0.kohm(), Package::M1005));
+    let r_bat_bot = board.add("R_BAT_BOT", Resistor::new(100.0.kohm(), Package::M1005));
 
     board.connect(r_bat_top.pin(Resistor::PIN1), batterm.pin(Bh123a::POSITIVE))?;
     board.connect(r_bat_top.pin(Resistor::PIN2), rpi.pin(Rp2354a::GPIO26_ADC0))?;
@@ -493,7 +493,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
 
     // ── Red LED (D1): GPIO27 → R_RED → LED anode → LED cathode → GND ──
 
-    let r_red = board.add("R_RED", Resistor::new(1.0.kohm(), Package::M0603));
+    let r_red = board.add("R_RED", Resistor::new(1.0.kohm(), Package::M1005));
     let d_red = board.add("D1", Comp5988010107f::new());
 
     board.connect(r_red.pin(Resistor::PIN1), rpi.pin(Rp2354a::GPIO27_ADC1))?;
@@ -502,7 +502,7 @@ pub fn create(name: Option<&str>) -> Result<Board> {
 
     // ── Green LED (D2): GPIO28 → R_GRN → LED anode → LED cathode → GND ──
 
-    let r_grn = board.add("R_GRN", Resistor::new(1.0.kohm(), Package::M0603));
+    let r_grn = board.add("R_GRN", Resistor::new(1.0.kohm(), Package::M1005));
     let d_grn = board.add("D2", Comp5988060107f::new());
 
     board.connect(r_grn.pin(Resistor::PIN1), rpi.pin(Rp2354a::GPIO28_ADC2))?;
@@ -523,7 +523,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -542,7 +542,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -567,7 +567,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -582,7 +582,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -608,7 +608,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -634,7 +634,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -659,7 +659,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -674,7 +674,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -698,7 +698,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -715,7 +715,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
@@ -733,7 +733,7 @@ mod tests {
         let report = copperleaf_compile::run(
             create(None).unwrap(),
             &CompileOptions {
-                decoupling_footprint: Package::M0603,
+                decoupling_footprint: Package::M1005,
             },
         )
         .unwrap();
